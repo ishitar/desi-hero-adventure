@@ -1,10 +1,11 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 35 100% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 30 95% 60%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -61,7 +55,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 30 95% 60%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -97,5 +91,152 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+/* Game specific styles */
+@layer components {
+  .game-container {
+    @apply relative overflow-hidden bg-gradient-to-b from-game-blue to-game-teal;
+    height: 100vh;
+    width: 100%;
+  }
+
+  .game-canvas {
+    @apply relative bg-gradient-to-b from-game-blue to-game-teal overflow-hidden;
+    height: 100%;
+    width: 100%;
+  }
+
+  .character {
+    @apply absolute transition-transform;
+    bottom: 20%;
+    left: 20%;
+    z-index: 20;
+  }
+
+  .coin {
+    @apply absolute w-6 h-6 bg-game-yellow rounded-full animate-pulse-gentle;
+    z-index: 10;
+  }
+
+  .obstacle {
+    @apply absolute transition-all duration-300;
+    z-index: 15;
+  }
+
+  .temple {
+    @apply absolute transition-all duration-1000;
+    z-index: 5;
+  }
+
+  .banner {
+    @apply absolute animate-float;
+    z-index: 8;
+  }
+
+  .ground {
+    @apply absolute bottom-0 w-full bg-game-earth;
+    height: 20%;
+    z-index: 10;
+  }
+
+  .platform {
+    @apply absolute bg-game-earth rounded-md;
+    z-index: 10;
+  }
+
+  .game-ui {
+    @apply fixed top-4 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-4 z-50 
+           bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 shadow-lg;
+  }
+
+  .score-display {
+    @apply font-bold text-game-navy text-xl;
+  }
+
+  .game-button {
+    @apply relative flex items-center justify-center transition-all duration-300
+           bg-white/30 backdrop-blur-md border border-white/40 shadow-md rounded-full
+           hover:bg-white/40 active:scale-95 select-none;
+  }
+
+  .game-over-modal {
+    @apply fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-md animate-fade-in;
+  }
+
+  .game-over-content {
+    @apply bg-white/80 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-white/40
+           flex flex-col items-center animate-scale-up;
+    max-width: 90%;
+    width: 400px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .game-ui {
+      @apply bottom-4 top-auto flex-wrap;
+    }
+    
+    .game-button {
+      @apply w-12 h-12;
+    }
+  }
+}
+
+/* Custom animations */
+@keyframes float-banner {
+  0%, 100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(1deg);
+  }
+}
+
+.animate-float-banner {
+  animation: float-banner 4s ease-in-out infinite;
+}
+
+@keyframes character-run {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-character-run {
+  animation: character-run 0.5s steps(8) infinite;
+}
+
+@keyframes character-jump {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-100px) scale(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-character-jump {
+  animation: character-jump 0.5s ease-in-out;
+}
+
+@keyframes cow-walk {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-15px);
+  }
+}
+
+.animate-cow-walk {
+  animation: cow-walk 1s alternate infinite;
 }
