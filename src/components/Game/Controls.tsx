@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useGame } from '@/context/GameContext';
-import { ArrowLeft, ArrowRight, ArrowUp, Pause, Play } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, Pause, Play, Map } from 'lucide-react';
 
 const Controls: React.FC = () => {
   const { 
@@ -32,10 +32,11 @@ const Controls: React.FC = () => {
         <button 
           className="bg-game-saffron text-white px-8 py-4 rounded-full text-2xl font-bold
                      shadow-lg transform transition-all hover:scale-105 active:scale-95
-                     border-4 border-white/30"
+                     border-4 border-white/30 flex items-center gap-2"
           onClick={startGame}
         >
-          Start Game
+          <Map className="w-6 h-6" />
+          Start Treasure Hunt
         </button>
       </div>
     );

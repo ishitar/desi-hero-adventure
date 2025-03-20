@@ -3,11 +3,11 @@ import React from 'react';
 import { useGame } from '@/context/GameContext';
 
 const Obstacles: React.FC = () => {
-  const { obstacles, coins, decorations } = useGame();
+  const { obstacles, treasures, decorations } = useGame();
   
   return (
     <>
-      {/* Render cows */}
+      {/* Render cows (obstacles) */}
       {obstacles.map(cow => (
         <div
           key={cow.id}
@@ -49,20 +49,34 @@ const Obstacles: React.FC = () => {
         </div>
       ))}
       
-      {/* Render coins */}
-      {coins.map(coin => (
+      {/* Render treasures */}
+      {treasures.map(treasure => (
         <div
-          key={coin.id}
-          className="coin"
+          key={treasure.id}
+          className="treasure"
           style={{
-            left: `${coin.x}px`,
-            top: `${coin.y}px`,
-            width: `${coin.width}px`,
-            height: `${coin.height}px`,
+            left: `${treasure.x}px`,
+            top: `${treasure.y}px`,
+            width: `${treasure.width}px`,
+            height: `${treasure.height}px`,
           }}
         >
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-3/4 h-3/4 bg-game-yellow rounded-full border-4 border-yellow-600 animate-pulse-gentle"></div>
+            {treasure.type === 'coin' && (
+              <div className="w-3/4 h-3/4 bg-game-yellow rounded-full border-4 border-yellow-600 animate-pulse-gentle"></div>
+            )}
+            {treasure.type === 'gem' && (
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-8 h-12 bg-purple-500 animate-pulse transform rotate-45 rounded-md"></div>
+              </div>
+            )}
+            {treasure.type === 'chest' && (
+              <div className="w-full h-full">
+                <div className="w-full h-2/3 bg-amber-800 rounded-md bottom-0 absolute"></div>
+                <div className="w-full h-1/3 bg-amber-900 rounded-t-md top-0 absolute"></div>
+                <div className="w-4 h-4 bg-yellow-500 rounded-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+              </div>
+            )}
           </div>
         </div>
       ))}
@@ -146,6 +160,25 @@ const Obstacles: React.FC = () => {
               }}
             >
               <div className="w-full h-full bg-game-earth rounded-lg border-t-4 border-green-800"></div>
+            </div>
+          );
+        }
+        
+        if (decoration.type === 'clue') {
+          return (
+            <div
+              key={decoration.id}
+              className="clue animate-bounce-slow"
+              style={{
+                left: `${decoration.x}px`,
+                top: `${decoration.y}px`,
+                width: `${decoration.width}px`,
+                height: `${decoration.height}px`,
+              }}
+            >
+              <div className="w-full h-full bg-amber-100 border-2 border-amber-800 rounded-lg flex items-center justify-center text-amber-900 font-bold">
+                ?
+              </div>
             </div>
           );
         }

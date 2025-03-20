@@ -1,9 +1,18 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const Character: React.FC = () => {
-  const { character } = useGame();
+  const { character, moveForward } = useGame();
+  
+  // Auto-run the character forward
+  useEffect(() => {
+    const forwardInterval = setInterval(() => {
+      moveForward();
+    }, 50);
+    
+    return () => clearInterval(forwardInterval);
+  }, [moveForward]);
   
   // Character styling based on state
   const characterClasses = `character ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''}`;

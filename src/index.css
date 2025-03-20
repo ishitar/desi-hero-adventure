@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -147,6 +146,16 @@
     z-index: 10;
   }
 
+  .treasure {
+    @apply absolute transition-all duration-300;
+    z-index: 15;
+  }
+
+  .clue {
+    @apply absolute bg-amber-100 border-2 border-amber-800 rounded-lg;
+    z-index: 12;
+  }
+
   .game-ui {
     @apply fixed top-4 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-4 z-50 
            bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 shadow-lg;
@@ -239,4 +248,45 @@
 
 .animate-cow-walk {
   animation: cow-walk 1s alternate infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-gentle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
+}
+
+@keyframes bounce-horizontal {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-3px);
+  }
+}
+
+.animate-bounce-horizontal {
+  animation: bounce-horizontal 0.3s alternate infinite;
 }

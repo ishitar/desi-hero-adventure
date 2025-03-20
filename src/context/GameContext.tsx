@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameOver';
 
@@ -9,8 +9,9 @@ interface GameObject {
   y: number;
   width: number;
   height: number;
-  type: 'cow' | 'coin' | 'temple' | 'banner' | 'platform';
+  type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue';
   speed?: number;
+  collected?: boolean;
 }
 
 interface Character {
@@ -26,9 +27,11 @@ interface GameContextProps {
   gameState: GameState;
   score: number;
   highScore: number;
+  treasuresCollected: number;
+  totalTreasures: number;
   character: Character;
   obstacles: GameObject[];
-  coins: GameObject[];
+  treasures: GameObject[];
   decorations: GameObject[];
   startGame: () => void;
   pauseGame: () => void;
@@ -38,6 +41,7 @@ interface GameContextProps {
   jump: () => void;
   moveLeft: () => void;
   moveRight: () => void;
+  moveForward: () => void;
   stopMoving: () => void;
 }
 
@@ -55,22 +59,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gameState, setGameState] = useState<GameState>('idle');
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
+  const [treasuresCollected, setTreasuresCollected] = useState(0);
+  const [totalTreasures, setTotalTreasures] = useState(0);
   const [character, setCharacter] = useState<Character>({
-    x: 20,
+    x: 50,
     y: 0,
     width: 50,
     height: 80,
     jumping: false,
-    running: false,
+    running: true,
   });
   const [obstacles, setObstacles] = useState<GameObject[]>([]);
-  const [coins, setCoins] = useState<GameObject[]>([]);
+  const [treasures, setTreasures] = useState<GameObject[]>([]);
   const [decorations, setDecorations] = useState<GameObject[]>([]);
   const [gameLoopId, setGameLoopId] = useState<number | null>(null);
+  const worldPosition = useRef(0);
+  const worldSpeed = useRef(3);
 
   // Load high score from localStorage
   useEffect(() => {
-    const savedHighScore = localStorage.getItem('indianMarioHighScore');
+    const savedHighScore = localStorage.getItem('indianTreasureHuntHighScore');
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore, 10));
     }
@@ -78,20 +86,23 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Save high score to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('indianMarioHighScore', highScore.toString());
+    localStorage.setItem('indianTreasureHuntHighScore', highScore.toString());
   }, [highScore]);
 
   const startGame = useCallback(() => {
     setGameState('playing');
     setScore(0);
+    setTreasuresCollected(0);
     setCharacter({
-      x: 20,
+      x: 50,
       y: 0,
       width: 50,
       height: 80,
       jumping: false,
-      running: false,
+      running: true,
     });
+    worldPosition.current = 0;
+    worldSpeed.current = 3;
     
     // Initialize game objects
     initializeGameObjects();
@@ -174,6 +185,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [gameState]);
 
+  const moveForward = useCallback(() => {
+    if (gameState === 'playing') {
+      worldPosition.current += worldSpeed.current;
+      
+      // Increase speed gradually
+      if (worldPosition.current % 1000 === 0) {
+        worldSpeed.current += 0.1;
+      }
+    }
+  }, [gameState]);
+
   const stopMoving = useCallback(() => {
     if (gameState === 'playing') {
       setCharacter(prev => ({ ...prev, running: false }));
@@ -183,27 +205,46 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Initialize game objects
   const initializeGameObjects = useCallback(() => {
     // Create obstacles (cows)
-    const newObstacles: GameObject[] = Array(3).fill(null).map((_, i) => ({
+    const newObstacles: GameObject[] = Array(5).fill(null).map((_, i) => ({
       id: `cow-${i}`,
       x: window.innerWidth + (i * 600) + Math.random() * 300,
       y: 0,
       width: 80,
       height: 60,
-      type: 'cow',
+      type: 'cow' as const,
       speed: 2 + Math.random() * 2,
     }));
     
-    // Create coins
-    const newCoins: GameObject[] = Array(10).fill(null).map((_, i) => ({
-      id: `coin-${i}`,
-      x: window.innerWidth + (i * 200) + Math.random() * 300,
-      y: 150 + Math.random() * 150,
-      width: 30,
-      height: 30,
-      type: 'coin',
-    }));
+    // Create treasures (coins, gems, chests)
+    const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
+    const newTreasures: GameObject[] = Array(15).fill(null).map((_, i) => {
+      const type = treasureTypes[Math.floor(Math.random() * 3)] as 'coin' | 'gem' | 'chest';
+      let width = 30;
+      let height = 30;
+      
+      if (type === 'gem') {
+        width = 20;
+        height = 30;
+      } else if (type === 'chest') {
+        width = 40;
+        height = 30;
+      }
+      
+      return {
+        id: `treasure-${i}`,
+        x: window.innerWidth + (i * 400) + Math.random() * 300,
+        y: 150 + Math.random() * 150,
+        width,
+        height,
+        type,
+        collected: false,
+      };
+    });
     
-    // Create decorations (temples, banners)
+    // Set total treasures count
+    setTotalTreasures(newTreasures.length);
+    
+    // Create decorations (temples, banners, platforms, clues)
     const newDecorations: GameObject[] = [
       // Temples in background
       ...Array(3).fill(null).map((_, i) => ({
@@ -234,10 +275,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         height: 30,
         type: 'platform' as const,
       })),
+      
+      // Clues
+      ...Array(5).fill(null).map((_, i) => ({
+        id: `clue-${i}`,
+        x: window.innerWidth + (i * 600) + Math.random() * 400,
+        y: 100 + Math.random() * 200,
+        width: 30,
+        height: 30,
+        type: 'clue' as const,
+      })),
     ];
     
     setObstacles(newObstacles);
-    setCoins(newCoins);
+    setTreasures(newTreasures);
     setDecorations(newDecorations);
   }, []);
 
@@ -247,7 +298,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Move obstacles
     setObstacles(prev => prev.map(obstacle => {
-      const newX = obstacle.x - (obstacle.speed || 3);
+      const newX = obstacle.x - (obstacle.speed || worldSpeed.current);
       
       // Reset obstacle position if it goes off screen
       if (newX < -obstacle.width) {
@@ -263,31 +314,72 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }));
     
-    // Move coins
-    setCoins(prev => prev.map(coin => {
-      const newX = coin.x - 3;
-      
-      // Reset coin position if it goes off screen
-      if (newX < -coin.width) {
+    // Move treasures
+    setTreasures(prev => {
+      const updatedTreasures = prev.map(treasure => {
+        if (treasure.collected) return treasure;
+        
+        const newX = treasure.x - worldSpeed.current;
+        
+        // Reset treasure position if it goes off screen
+        if (newX < -treasure.width) {
+          // For chests, we want them to be more rare, so we place them further
+          const distance = treasure.type === 'chest' 
+            ? window.innerWidth + Math.random() * 1000 + 500
+            : window.innerWidth + Math.random() * 500;
+            
+          return {
+            ...treasure,
+            x: distance,
+            y: 150 + Math.random() * 150,
+          };
+        }
+        
         return {
-          ...coin,
-          x: window.innerWidth + Math.random() * 500,
-          y: 150 + Math.random() * 150,
+          ...treasure,
+          x: newX,
         };
+      });
+      
+      // Check if we need to add more treasures
+      if (updatedTreasures.filter(t => !t.collected).length < 5) {
+        const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
+        const newTreasures = Array(3).fill(null).map((_, i) => {
+          const type = treasureTypes[Math.floor(Math.random() * 3)] as 'coin' | 'gem' | 'chest';
+          let width = 30;
+          let height = 30;
+          
+          if (type === 'gem') {
+            width = 20;
+            height = 30;
+          } else if (type === 'chest') {
+            width = 40;
+            height = 30;
+          }
+          
+          return {
+            id: `treasure-${Date.now()}-${i}`,
+            x: window.innerWidth + (i * 400) + Math.random() * 300,
+            y: 150 + Math.random() * 150,
+            width,
+            height,
+            type,
+            collected: false,
+          };
+        });
+        
+        return [...updatedTreasures, ...newTreasures];
       }
       
-      return {
-        ...coin,
-        x: newX,
-      };
-    }));
+      return updatedTreasures;
+    });
     
     // Move decorations (slower than obstacles)
     setDecorations(prev => prev.map(decoration => {
       let speed = 1; // Default slow speed for background elements
       
-      if (decoration.type === 'platform') {
-        speed = 3; // Platforms move at same speed as game
+      if (decoration.type === 'platform' || decoration.type === 'clue') {
+        speed = worldSpeed.current; // Platforms move at same speed as game
       }
       
       const newX = decoration.x - speed;
@@ -310,6 +402,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             ...decoration,
             x: window.innerWidth + Math.random() * 400,
             y: 200 + Math.random() * 150,
+          };
+        } else if (decoration.type === 'clue') {
+          return {
+            ...decoration,
+            x: window.innerWidth + Math.random() * 600,
+            y: 100 + Math.random() * 200,
           };
         }
       }
@@ -334,35 +432,40 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
-    // 2. Check collision with coins (score)
-    const coinCollisions = coins.filter(coin => (
-      character.x < coin.x + coin.width &&
-      character.x + character.width > coin.x &&
-      character.y < coin.y + coin.height &&
-      character.y + character.height > coin.y
+    // 2. Check collision with treasures (score)
+    const treasureCollisions = treasures.filter(treasure => (
+      !treasure.collected &&
+      character.x < treasure.x + treasure.width &&
+      character.x + character.width > treasure.x &&
+      character.y < treasure.y + treasure.height &&
+      character.y + character.height > treasure.y
     ));
     
-    if (coinCollisions.length > 0) {
-      // Increase score and remove collected coins
-      setScore(prev => prev + (coinCollisions.length * 10));
-      setCoins(prev => prev.filter(coin => !coinCollisions.includes(coin)));
-      
-      // Add new coins to replace collected ones
-      const newCoins = coinCollisions.map((_, i) => ({
-        id: `coin-${Date.now()}-${i}`,
-        x: window.innerWidth + Math.random() * 500,
-        y: 150 + Math.random() * 150,
-        width: 30,
-        height: 30,
-        type: 'coin' as const,
+    if (treasureCollisions.length > 0) {
+      // Mark treasures as collected
+      setTreasures(prev => prev.map(treasure => {
+        if (treasureCollisions.some(t => t.id === treasure.id)) {
+          return { ...treasure, collected: true };
+        }
+        return treasure;
       }));
       
-      setCoins(prev => [...prev, ...newCoins]);
+      // Calculate score based on treasure type
+      let treasureScore = 0;
+      treasureCollisions.forEach(treasure => {
+        if (treasure.type === 'coin') treasureScore += 10;
+        else if (treasure.type === 'gem') treasureScore += 30;
+        else if (treasure.type === 'chest') treasureScore += 100;
+      });
+      
+      // Increase score and treasures collected count
+      setScore(prev => prev + treasureScore);
+      setTreasuresCollected(prev => prev + treasureCollisions.length);
     }
     
     // Increase score gradually as game progresses
     setScore(prev => prev + 0.1);
-  }, [gameState, character, obstacles, coins, gameOver]);
+  }, [gameState, character, obstacles, treasures, gameOver]);
   
   // Clean up game loop on unmount
   useEffect(() => {
@@ -379,9 +482,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         gameState,
         score,
         highScore,
+        treasuresCollected,
+        totalTreasures,
         character,
         obstacles,
-        coins,
+        treasures,
         decorations,
         startGame,
         pauseGame,
@@ -391,6 +496,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         jump,
         moveLeft,
         moveRight,
+        moveForward,
         stopMoving,
       }}
     >
