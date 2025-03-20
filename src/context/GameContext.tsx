@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameOver';
@@ -9,9 +8,11 @@ interface GameObject {
   y: number;
   width: number;
   height: number;
-  type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue';
+  type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue' | 'snake' | 'tiger' | 'vulture';
   speed?: number;
   collected?: boolean;
+  direction?: 'left' | 'right' | 'up' | 'down';
+  flightHeight?: number;
 }
 
 interface Character {
@@ -76,7 +77,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const worldPosition = useRef(0);
   const worldSpeed = useRef(3);
 
-  // Load high score from localStorage
   useEffect(() => {
     const savedHighScore = localStorage.getItem('indianTreasureHuntHighScore');
     if (savedHighScore) {
@@ -84,7 +84,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Save high score to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('indianTreasureHuntHighScore', highScore.toString());
   }, [highScore]);
@@ -104,13 +103,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     worldPosition.current = 0;
     worldSpeed.current = 3;
     
-    // Initialize game objects
     initializeGameObjects();
     
-    // Start game loop
     const loopId = window.setInterval(() => {
       updateGameState();
-    }, 1000 / 60); // 60 FPS
+    }, 1000 / 60);
     
     setGameLoopId(loopId);
   }, []);
@@ -142,7 +139,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setGameLoopId(null);
     }
     
-    // Update high score if current score is higher
     if (score > highScore) {
       setHighScore(score);
     }
@@ -158,10 +154,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (gameState === 'playing' && !character.jumping) {
       setCharacter(prev => ({ ...prev, jumping: true }));
       
-      // Jump animation logic
       setTimeout(() => {
         setCharacter(prev => ({ ...prev, jumping: false }));
-      }, 500); // Jump duration matches CSS animation
+      }, 500);
     }
   }, [gameState, character.jumping]);
 
@@ -189,7 +184,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (gameState === 'playing') {
       worldPosition.current += worldSpeed.current;
       
-      // Increase speed gradually
       if (worldPosition.current % 1000 === 0) {
         worldSpeed.current += 0.1;
       }
@@ -202,10 +196,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [gameState]);
 
-  // Initialize game objects
   const initializeGameObjects = useCallback(() => {
-    // Create obstacles (cows)
-    const newObstacles: GameObject[] = Array(5).fill(null).map((_, i) => ({
+    const newObstacles: GameObject[] = Array(3).fill(null).map((_, i) => ({
       id: `cow-${i}`,
       x: window.innerWidth + (i * 600) + Math.random() * 300,
       y: 0,
@@ -215,7 +207,40 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       speed: 2 + Math.random() * 2,
     }));
     
-    // Create treasures (coins, gems, chests)
+    const snakes: GameObject[] = Array(3).fill(null).map((_, i) => ({
+      id: `snake-${i}`,
+      x: window.innerWidth + (i * 400) + Math.random() * 200,
+      y: 0,
+      width: 60,
+      height: 30,
+      type: 'snake' as const,
+      speed: 1.5 + Math.random() * 1.5,
+      direction: Math.random() > 0.5 ? 'left' as const : 'right' as const,
+    }));
+    
+    const tigers: GameObject[] = Array(2).fill(null).map((_, i) => ({
+      id: `tiger-${i}`,
+      x: window.innerWidth + (i * 800) + Math.random() * 400,
+      y: 0,
+      width: 90,
+      height: 70,
+      type: 'tiger' as const,
+      speed: 3 + Math.random() * 2,
+    }));
+    
+    const vultures: GameObject[] = Array(3).fill(null).map((_, i) => ({
+      id: `vulture-${i}`,
+      x: window.innerWidth + (i * 500) + Math.random() * 300,
+      y: 150 + Math.random() * 100,
+      width: 60,
+      height: 40,
+      type: 'vulture' as const,
+      speed: 2.5 + Math.random() * 1.5,
+      flightHeight: 150 + Math.random() * 100,
+    }));
+    
+    const allObstacles = [...newObstacles, ...snakes, ...tigers, ...vultures];
+    
     const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
     const newTreasures: GameObject[] = Array(15).fill(null).map((_, i) => {
       const type = treasureTypes[Math.floor(Math.random() * 3)] as 'coin' | 'gem' | 'chest';
@@ -241,12 +266,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     });
     
-    // Set total treasures count
     setTotalTreasures(newTreasures.length);
     
-    // Create decorations (temples, banners, platforms, clues)
     const newDecorations: GameObject[] = [
-      // Temples in background
       ...Array(3).fill(null).map((_, i) => ({
         id: `temple-${i}`,
         x: window.innerWidth + (i * 800) + Math.random() * 400,
@@ -256,7 +278,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: 'temple' as const,
       })),
       
-      // Banners
       ...Array(5).fill(null).map((_, i) => ({
         id: `banner-${i}`,
         x: window.innerWidth + (i * 400) + Math.random() * 200,
@@ -266,7 +287,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: 'banner' as const,
       })),
       
-      // Platforms
       ...Array(5).fill(null).map((_, i) => ({
         id: `platform-${i}`,
         x: window.innerWidth + (i * 500) + Math.random() * 300,
@@ -276,7 +296,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: 'platform' as const,
       })),
       
-      // Clues
       ...Array(5).fill(null).map((_, i) => ({
         id: `clue-${i}`,
         x: window.innerWidth + (i * 600) + Math.random() * 400,
@@ -287,43 +306,70 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })),
     ];
     
-    setObstacles(newObstacles);
+    setObstacles(allObstacles);
     setTreasures(newTreasures);
     setDecorations(newDecorations);
   }, []);
 
-  // Update game state
   const updateGameState = useCallback(() => {
     if (gameState !== 'playing') return;
     
-    // Move obstacles
     setObstacles(prev => prev.map(obstacle => {
-      const newX = obstacle.x - (obstacle.speed || worldSpeed.current);
+      let newX = obstacle.x - (obstacle.speed || worldSpeed.current);
+      let newY = obstacle.y;
       
-      // Reset obstacle position if it goes off screen
+      if (obstacle.type === 'vulture') {
+        newY = (obstacle.flightHeight || 150) + Math.sin(newX / 100) * 30;
+      } else if (obstacle.type === 'snake') {
+        newX = obstacle.x - (obstacle.speed || worldSpeed.current) * 0.7;
+        if (Math.random() < 0.02) {
+          obstacle.direction = obstacle.direction === 'left' ? 'right' : 'left';
+        }
+        if (obstacle.direction === 'left') {
+          newX -= 0.5;
+        } else {
+          newX -= 0.2;
+        }
+      } else if (obstacle.type === 'tiger') {
+        if (Math.random() < 0.05) {
+          newX = obstacle.x - (obstacle.speed || worldSpeed.current) * 2;
+        }
+      }
+      
       if (newX < -obstacle.width) {
         return {
           ...obstacle,
           x: window.innerWidth + Math.random() * 500,
+          y: obstacle.type === 'vulture' ? (150 + Math.random() * 100) : 0,
+          speed: getEnemySpeed(obstacle.type),
+          flightHeight: obstacle.type === 'vulture' ? (150 + Math.random() * 100) : undefined,
         };
       }
       
       return {
         ...obstacle,
         x: newX,
+        y: newY,
       };
     }));
     
-    // Move treasures
+    function getEnemySpeed(type: string) {
+      switch(type) {
+        case 'cow': return 2 + Math.random() * 2;
+        case 'snake': return 1.5 + Math.random() * 1.5;
+        case 'tiger': return 3 + Math.random() * 2;
+        case 'vulture': return 2.5 + Math.random() * 1.5;
+        default: return 2 + Math.random() * 2;
+      }
+    }
+    
     setTreasures(prev => {
       const updatedTreasures = prev.map(treasure => {
         if (treasure.collected) return treasure;
         
         const newX = treasure.x - worldSpeed.current;
         
-        // Reset treasure position if it goes off screen
         if (newX < -treasure.width) {
-          // For chests, we want them to be more rare, so we place them further
           const distance = treasure.type === 'chest' 
             ? window.innerWidth + Math.random() * 1000 + 500
             : window.innerWidth + Math.random() * 500;
@@ -341,7 +387,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       });
       
-      // Check if we need to add more treasures
       if (updatedTreasures.filter(t => !t.collected).length < 5) {
         const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
         const newTreasures = Array(3).fill(null).map((_, i) => {
@@ -374,17 +419,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return updatedTreasures;
     });
     
-    // Move decorations (slower than obstacles)
     setDecorations(prev => prev.map(decoration => {
-      let speed = 1; // Default slow speed for background elements
+      let speed = 1;
       
       if (decoration.type === 'platform' || decoration.type === 'clue') {
-        speed = worldSpeed.current; // Platforms move at same speed as game
+        speed = worldSpeed.current;
       }
       
       const newX = decoration.x - speed;
       
-      // Reset decoration position if it goes off screen
       if (newX < -decoration.width) {
         if (decoration.type === 'temple') {
           return {
@@ -418,21 +461,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }));
     
-    // Collision detection
-    // 1. Check collision with cows (game over)
-    const cowCollision = obstacles.some(cow => (
-      character.x < cow.x + cow.width &&
-      character.x + character.width > cow.x &&
-      character.y < cow.y + cow.height &&
-      character.y + character.height > cow.y
+    const obstacleCollision = obstacles.some(enemy => (
+      character.x < enemy.x + enemy.width &&
+      character.x + character.width > enemy.x &&
+      character.y < enemy.y + enemy.height &&
+      character.y + character.height > enemy.y
     ));
     
-    if (cowCollision) {
+    if (obstacleCollision) {
       gameOver();
       return;
     }
     
-    // 2. Check collision with treasures (score)
     const treasureCollisions = treasures.filter(treasure => (
       !treasure.collected &&
       character.x < treasure.x + treasure.width &&
@@ -442,7 +482,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     ));
     
     if (treasureCollisions.length > 0) {
-      // Mark treasures as collected
       setTreasures(prev => prev.map(treasure => {
         if (treasureCollisions.some(t => t.id === treasure.id)) {
           return { ...treasure, collected: true };
@@ -450,7 +489,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return treasure;
       }));
       
-      // Calculate score based on treasure type
       let treasureScore = 0;
       treasureCollisions.forEach(treasure => {
         if (treasure.type === 'coin') treasureScore += 10;
@@ -458,16 +496,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         else if (treasure.type === 'chest') treasureScore += 100;
       });
       
-      // Increase score and treasures collected count
       setScore(prev => prev + treasureScore);
       setTreasuresCollected(prev => prev + treasureCollisions.length);
     }
     
-    // Increase score gradually as game progresses
     setScore(prev => prev + 0.1);
   }, [gameState, character, obstacles, treasures, gameOver]);
   
-  // Clean up game loop on unmount
   useEffect(() => {
     return () => {
       if (gameLoopId) {

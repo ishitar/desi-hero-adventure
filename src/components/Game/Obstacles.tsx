@@ -7,47 +7,164 @@ const Obstacles: React.FC = () => {
   
   return (
     <>
-      {/* Render cows (obstacles) */}
-      {obstacles.map(cow => (
-        <div
-          key={cow.id}
-          className="obstacle animate-cow-walk"
-          style={{
-            left: `${cow.x}px`,
-            bottom: `${20 - 1}%`, // On the ground
-            width: `${cow.width}px`,
-            height: `${cow.height}px`,
-          }}
-        >
-          <div className="w-full h-full relative">
-            {/* Cow body */}
-            <div className="absolute w-full h-3/4 bg-white rounded-lg bottom-0"></div>
-            
-            {/* Cow head */}
-            <div className="absolute w-1/3 h-1/2 bg-white rounded-lg left-0 top-0">
-              {/* Eyes */}
-              <div className="absolute w-2 h-2 bg-black rounded-full top-2 left-2"></div>
-              <div className="absolute w-2 h-2 bg-black rounded-full top-2 left-6"></div>
-              
-              {/* Nose */}
-              <div className="absolute w-8 h-4 bg-pink-300 rounded-lg bottom-0 left-1"></div>
+      {/* Render enemies (obstacles) */}
+      {obstacles.map(obstacle => {
+        if (obstacle.type === 'cow') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle animate-cow-walk"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20 - 1}%`, // On the ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Cow body */}
+                <div className="absolute w-full h-3/4 bg-white rounded-lg bottom-0"></div>
+                
+                {/* Cow head */}
+                <div className="absolute w-1/3 h-1/2 bg-white rounded-lg left-0 top-0">
+                  {/* Eyes */}
+                  <div className="absolute w-2 h-2 bg-black rounded-full top-2 left-2"></div>
+                  <div className="absolute w-2 h-2 bg-black rounded-full top-2 left-6"></div>
+                  
+                  {/* Nose */}
+                  <div className="absolute w-8 h-4 bg-pink-300 rounded-lg bottom-0 left-1"></div>
+                </div>
+                
+                {/* Cow spots */}
+                <div className="absolute w-1/3 h-1/3 bg-black rounded-full top-2 right-2"></div>
+                <div className="absolute w-1/4 h-1/4 bg-black rounded-full bottom-2 left-12"></div>
+                
+                {/* Cow tail */}
+                <div className="absolute w-1/6 h-2/3 bg-gray-200 rounded-full right-0 top-0 rotate-45"></div>
+                
+                {/* Cow legs */}
+                <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-1/5"></div>
+                <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-2/5"></div>
+                <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-3/5"></div>
+                <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-4/5"></div>
+              </div>
             </div>
-            
-            {/* Cow spots */}
-            <div className="absolute w-1/3 h-1/3 bg-black rounded-full top-2 right-2"></div>
-            <div className="absolute w-1/4 h-1/4 bg-black rounded-full bottom-2 left-12"></div>
-            
-            {/* Cow tail */}
-            <div className="absolute w-1/6 h-2/3 bg-gray-200 rounded-full right-0 top-0 rotate-45"></div>
-            
-            {/* Cow legs */}
-            <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-1/5"></div>
-            <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-2/5"></div>
-            <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-3/5"></div>
-            <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-4/5"></div>
-          </div>
-        </div>
-      ))}
+          );
+        }
+        
+        if (obstacle.type === 'snake') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle animate-snake-slither"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20 - 0.5}%`, // Just above ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Snake body */}
+                <div className="absolute w-full h-full bg-green-600 rounded-full"></div>
+                
+                {/* Snake pattern */}
+                <div className="absolute w-3/4 h-3/4 bg-green-700 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                <div className="absolute w-1/2 h-1/2 bg-green-800 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                
+                {/* Snake head */}
+                <div className="absolute w-1/4 h-3/4 bg-green-600 rounded-lg right-0 top-1/2 -translate-y-1/2">
+                  {/* Eyes */}
+                  <div className="absolute w-1.5 h-1.5 bg-red-600 rounded-full top-1/4 right-1/4"></div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'tiger') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle animate-tiger-prowl"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20 - 1}%`, // On the ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Tiger body */}
+                <div className="absolute w-full h-2/3 bg-amber-500 rounded-lg bottom-0"></div>
+                
+                {/* Tiger head */}
+                <div className="absolute w-1/3 h-3/5 bg-amber-500 rounded-lg left-0 top-0">
+                  {/* Eyes */}
+                  <div className="absolute w-2 h-3 bg-yellow-300 rounded-full top-2 left-2"></div>
+                  <div className="absolute w-2 h-3 bg-yellow-300 rounded-full top-2 left-6"></div>
+                  
+                  {/* Nose */}
+                  <div className="absolute w-5 h-3 bg-pink-900 rounded-lg bottom-1 left-3"></div>
+                </div>
+                
+                {/* Tiger stripes */}
+                <div className="absolute w-2 h-2/3 bg-black rounded-full top-0 left-1/4"></div>
+                <div className="absolute w-2 h-2/3 bg-black rounded-full top-0 left-2/4"></div>
+                <div className="absolute w-2 h-2/3 bg-black rounded-full top-0 left-3/4"></div>
+                
+                {/* Tiger tail */}
+                <div className="absolute w-1/4 h-1/6 bg-amber-500 rounded-full right-0 top-1/3 rotate-45"></div>
+                
+                {/* Tiger legs */}
+                <div className="absolute w-3 h-4 bg-amber-600 rounded-b-lg bottom-0 left-1/5"></div>
+                <div className="absolute w-3 h-4 bg-amber-600 rounded-b-lg bottom-0 left-2/5"></div>
+                <div className="absolute w-3 h-4 bg-amber-600 rounded-b-lg bottom-0 left-3/5"></div>
+                <div className="absolute w-3 h-4 bg-amber-600 rounded-b-lg bottom-0 left-4/5"></div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'vulture') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle"
+              style={{
+                left: `${obstacle.x}px`,
+                top: `${obstacle.y}px`,
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Vulture body */}
+                <div className="absolute w-3/5 h-2/3 bg-gray-800 rounded-lg top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                
+                {/* Vulture head */}
+                <div className="absolute w-1/4 h-1/3 bg-gray-700 rounded-full left-0 top-1/4">
+                  {/* Beak */}
+                  <div className="absolute w-1/2 h-1/2 bg-red-900 rounded-lg left-0 top-1/2"></div>
+                  
+                  {/* Eye */}
+                  <div className="absolute w-1.5 h-1.5 bg-yellow-400 rounded-full top-1/3 right-1/4"></div>
+                </div>
+                
+                {/* Vulture wings */}
+                <div className="absolute w-full h-1/2 bg-gray-700 top-0 animate-vulture-wings">
+                  <div className="absolute w-4/5 h-1/3 bg-gray-600 rounded-t-lg top-0 left-1/2 -translate-x-1/2"></div>
+                </div>
+                
+                {/* Vulture tail */}
+                <div className="absolute w-1/4 h-1/4 bg-gray-700 rounded-lg right-0 bottom-0"></div>
+              </div>
+            </div>
+          );
+        }
+        
+        return null;
+      })}
       
       {/* Render treasures */}
       {treasures.map(treasure => (
