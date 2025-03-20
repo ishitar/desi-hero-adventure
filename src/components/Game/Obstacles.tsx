@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useGame } from '@/context/GameContext';
 
@@ -158,6 +157,119 @@ const Obstacles: React.FC = () => {
                 
                 {/* Vulture tail */}
                 <div className="absolute w-1/4 h-1/4 bg-gray-700 rounded-lg right-0 bottom-0"></div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'insect') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle animate-insect-fly"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20 - 2}%`, // Above ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Insect body */}
+                <div className="absolute w-2/3 h-2/3 bg-amber-900 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                
+                {/* Insect head */}
+                <div className="absolute w-1/3 h-1/2 bg-amber-800 rounded-full left-0 top-1/4">
+                  {/* Eyes */}
+                  <div className="absolute w-1 h-1 bg-red-500 rounded-full top-1 left-1"></div>
+                  <div className="absolute w-1 h-1 bg-red-500 rounded-full top-1 right-1"></div>
+                </div>
+                
+                {/* Insect wings */}
+                <div className="absolute w-full h-1/2 top-0">
+                  <div className="absolute w-1/2 h-full bg-amber-200/50 left-1/4 rounded-t-full"></div>
+                </div>
+                
+                {/* Insect legs */}
+                <div className="absolute w-1 h-2 bg-amber-700 -rotate-30 bottom-0 left-1/4"></div>
+                <div className="absolute w-1 h-2 bg-amber-700 rotate-0 bottom-0 left-2/4"></div>
+                <div className="absolute w-1 h-2 bg-amber-700 rotate-30 bottom-0 left-3/4"></div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'beetle') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle animate-beetle-crawl"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20 - 0.5}%`, // On ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Beetle body */}
+                <div className="absolute w-4/5 h-3/4 bg-blue-900 rounded-full top-1/4 left-1/2 -translate-x-1/2"></div>
+                
+                {/* Beetle head */}
+                <div className="absolute w-1/4 h-1/4 bg-blue-800 rounded-sm top-0 left-1/2 -translate-x-1/2">
+                  {/* Pincers */}
+                  <div className="absolute w-1 h-2 bg-blue-700 -rotate-30 top-0 left-0"></div>
+                  <div className="absolute w-1 h-2 bg-blue-700 rotate-30 top-0 right-0"></div>
+                </div>
+                
+                {/* Beetle shell */}
+                <div className="absolute w-3/4 h-1/2 bg-blue-800 rounded-t-full top-1/4 left-1/2 -translate-x-1/2"></div>
+                
+                {/* Beetle legs */}
+                <div className="absolute w-6 h-1 bg-blue-700 -rotate-45 bottom-1 left-0"></div>
+                <div className="absolute w-6 h-1 bg-blue-700 rotate-0 bottom-1 left-1/3"></div>
+                <div className="absolute w-6 h-1 bg-blue-700 rotate-45 bottom-1 right-0"></div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'scorpion') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle animate-scorpion-move"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20 - 0.5}%`, // On ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Scorpion body */}
+                <div className="absolute w-2/3 h-3/4 bg-amber-700 rounded-lg left-0 top-1/4"></div>
+                
+                {/* Scorpion head */}
+                <div className="absolute w-1/4 h-1/4 bg-amber-800 rounded-full left-0 top-1/4">
+                  {/* Eyes */}
+                  <div className="absolute w-1 h-1 bg-black rounded-full top-1 left-1"></div>
+                  <div className="absolute w-1 h-1 bg-black rounded-full top-1 right-1"></div>
+                </div>
+                
+                {/* Scorpion claws */}
+                <div className="absolute w-3 h-2 bg-amber-800 left-1/4 top-0"></div>
+                <div className="absolute w-3 h-2 bg-amber-800 left-1/2 top-0"></div>
+                
+                {/* Scorpion tail */}
+                <div className="absolute w-1/3 h-1/2 bg-amber-700 rounded-r-lg right-0 top-0">
+                  <div className="absolute w-1/2 h-1/2 bg-amber-900 rounded-full right-0 bottom-0"></div>
+                </div>
+                
+                {/* Scorpion legs */}
+                <div className="absolute w-4 h-1 bg-amber-600 -rotate-45 bottom-0 left-1/6"></div>
+                <div className="absolute w-4 h-1 bg-amber-600 rotate-0 bottom-0 left-1/3"></div>
+                <div className="absolute w-4 h-1 bg-amber-600 rotate-45 bottom-0 left-1/2"></div>
               </div>
             </div>
           );

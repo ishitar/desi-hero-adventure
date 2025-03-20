@@ -8,7 +8,7 @@ interface GameObject {
   y: number;
   width: number;
   height: number;
-  type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue' | 'snake' | 'tiger' | 'vulture';
+  type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue' | 'snake' | 'tiger' | 'vulture' | 'insect' | 'beetle' | 'scorpion';
   speed?: number;
   collected?: boolean;
   direction?: 'left' | 'right' | 'up' | 'down';
@@ -22,6 +22,7 @@ interface Character {
   height: number;
   jumping: boolean;
   running: boolean;
+  lives: number;
 }
 
 interface GameContextProps {
@@ -44,6 +45,7 @@ interface GameContextProps {
   moveRight: () => void;
   moveForward: () => void;
   stopMoving: () => void;
+  targetLocation?: {x: number, y: number};
 }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
@@ -69,6 +71,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     height: 80,
     jumping: false,
     running: true,
+    lives: 10,
   });
   const [obstacles, setObstacles] = useState<GameObject[]>([]);
   const [treasures, setTreasures] = useState<GameObject[]>([]);
@@ -76,6 +79,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gameLoopId, setGameLoopId] = useState<number | null>(null);
   const worldPosition = useRef(0);
   const worldSpeed = useRef(3);
+  const [targetLocation, setTargetLocation] = useState<{x: number, y: number} | undefined>(undefined);
 
   useEffect(() => {
     const savedHighScore = localStorage.getItem('indianTreasureHuntHighScore');
@@ -99,9 +103,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       height: 80,
       jumping: false,
       running: true,
+      lives: 10,
     });
     worldPosition.current = 0;
     worldSpeed.current = 3;
+    
+    setTargetLocation({
+      x: 1000 + Math.random() * 3000,
+      y: Math.random() < 0.5 ? 0 : 200,
+    });
     
     initializeGameObjects();
     
@@ -239,7 +249,37 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       flightHeight: 150 + Math.random() * 100,
     }));
     
-    const allObstacles = [...newObstacles, ...snakes, ...tigers, ...vultures];
+    const insects: GameObject[] = Array(4).fill(null).map((_, i) => ({
+      id: `insect-${i}`,
+      x: window.innerWidth + (i * 300) + Math.random() * 200,
+      y: 30 + Math.random() * 50,
+      width: 20,
+      height: 15,
+      type: 'insect' as const,
+      speed: 3 + Math.random() * 2,
+    }));
+    
+    const beetles: GameObject[] = Array(3).fill(null).map((_, i) => ({
+      id: `beetle-${i}`,
+      x: window.innerWidth + (i * 400) + Math.random() * 300,
+      y: 10,
+      width: 25,
+      height: 20,
+      type: 'beetle' as const,
+      speed: 1.5 + Math.random() * 1.5,
+    }));
+    
+    const scorpions: GameObject[] = Array(2).fill(null).map((_, i) => ({
+      id: `scorpion-${i}`,
+      x: window.innerWidth + (i * 600) + Math.random() * 400,
+      y: 5,
+      width: 30,
+      height: 20,
+      type: 'scorpion' as const,
+      speed: 1 + Math.random() * 1,
+    }));
+    
+    const allObstacles = [...newObstacles, ...snakes, ...tigers, ...vultures, ...insects, ...beetles, ...scorpions];
     
     const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
     const newTreasures: GameObject[] = Array(15).fill(null).map((_, i) => {
@@ -469,8 +509,33 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     ));
     
     if (obstacleCollision) {
-      gameOver();
-      return;
+      setCharacter(prev => {
+        const newLives = prev.lives - 1;
+        
+        if (newLives <= 0) {
+          gameOver();
+        }
+        
+        return {
+          ...prev,
+          lives: Math.max(0, newLives)
+        };
+      });
+      
+      setObstacles(prev => prev.map(obs => {
+        if (
+          character.x < obs.x + obs.width &&
+          character.x + character.width > obs.x &&
+          character.y < obs.y + obs.height &&
+          character.y + character.height > obs.y
+        ) {
+          return {
+            ...obs,
+            x: obs.x + 150
+          };
+        }
+        return obs;
+      }));
     }
     
     const treasureCollisions = treasures.filter(treasure => (
@@ -533,6 +598,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         moveRight,
         moveForward,
         stopMoving,
+        targetLocation,
       }}
     >
       {children}

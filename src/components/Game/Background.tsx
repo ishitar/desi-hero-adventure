@@ -7,13 +7,17 @@ const Background: React.FC = () => {
   const mountainsRef = useRef<HTMLDivElement>(null);
   const cloudsRef = useRef<HTMLDivElement[]>([]);
   const treesRef = useRef<HTMLDivElement>(null);
+  const buildingsRef = useRef<HTMLDivElement>(null);
+  const peopleRef = useRef<HTMLDivElement>(null);
   
-  // Parallax scrolling effect
+  // Parallax scrolling effect with increased speed
   useEffect(() => {
     const scrollSpeed = {
-      mountains: 0.2,
-      trees: 0.5,
-      clouds: 0.3
+      mountains: 0.3, // increased from 0.2
+      trees: 0.8, // increased from 0.5
+      clouds: 0.4, // increased from 0.3
+      buildings: 0.6,
+      people: 0.7
     };
     
     let animationFrameId: number;
@@ -25,7 +29,7 @@ const Background: React.FC = () => {
         return;
       }
       
-      scrollPos += 1;
+      scrollPos += 2; // increased from 1 for faster movement
       
       // Move mountains (slow)
       if (mountainsRef.current) {
@@ -35,6 +39,16 @@ const Background: React.FC = () => {
       // Move trees (medium)
       if (treesRef.current) {
         treesRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.trees}px)`;
+      }
+      
+      // Move buildings (medium-fast)
+      if (buildingsRef.current) {
+        buildingsRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.buildings}px)`;
+      }
+      
+      // Move people (medium-fast)
+      if (peopleRef.current) {
+        peopleRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.people}px)`;
       }
       
       // Move clouds (variable)
@@ -67,6 +81,113 @@ const Background: React.FC = () => {
           backgroundImage: 'linear-gradient(to bottom right, #8C6D46, #A08562)',
           clipPath: 'polygon(0% 100%, 8% 60%, 15% 80%, 22% 60%, 30% 90%, 35% 70%, 45% 100%, 52% 75%, 60% 100%, 70% 80%, 80% 50%, 90% 75%, 100% 100%)' 
         }}></div>
+      </div>
+      
+      {/* Buildings/temples in the distance */}
+      <div ref={buildingsRef} className="absolute bottom-[20%] w-[200%] h-[18%]">
+        {/* Temple 1 */}
+        <div className="absolute bottom-0 left-[10%] w-16 h-24">
+          <div className="absolute bottom-0 w-full h-3/4 bg-amber-200"></div>
+          <div className="absolute top-0 w-full h-1/4 bg-amber-700" style={{ 
+            clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+          }}></div>
+        </div>
+        
+        {/* Building 1 */}
+        <div className="absolute bottom-0 left-[25%] w-20 h-20 bg-blue-200"></div>
+        
+        {/* Temple 2 */}
+        <div className="absolute bottom-0 left-[40%] w-16 h-28">
+          <div className="absolute bottom-0 w-full h-3/4 bg-amber-300"></div>
+          <div className="absolute top-0 w-full h-1/4 bg-amber-800" style={{ 
+            clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+          }}></div>
+        </div>
+        
+        {/* Building 2 */}
+        <div className="absolute bottom-0 left-[60%] w-24 h-16 bg-gray-300"></div>
+        
+        {/* Temple 3 */}
+        <div className="absolute bottom-0 left-[75%] w-20 h-32">
+          <div className="absolute bottom-0 w-full h-3/4 bg-amber-100"></div>
+          <div className="absolute top-0 w-full h-1/4 bg-amber-600" style={{ 
+            clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+          }}></div>
+        </div>
+        
+        {/* Second set for seamless scrolling */}
+        <div className="absolute bottom-0 left-[110%] w-16 h-24">
+          <div className="absolute bottom-0 w-full h-3/4 bg-amber-200"></div>
+          <div className="absolute top-0 w-full h-1/4 bg-amber-700" style={{ 
+            clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+          }}></div>
+        </div>
+        
+        <div className="absolute bottom-0 left-[125%] w-20 h-20 bg-blue-200"></div>
+        
+        <div className="absolute bottom-0 left-[140%] w-16 h-28">
+          <div className="absolute bottom-0 w-full h-3/4 bg-amber-300"></div>
+          <div className="absolute top-0 w-full h-1/4 bg-amber-800" style={{ 
+            clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+          }}></div>
+        </div>
+        
+        <div className="absolute bottom-0 left-[160%] w-24 h-16 bg-gray-300"></div>
+        
+        <div className="absolute bottom-0 left-[175%] w-20 h-32">
+          <div className="absolute bottom-0 w-full h-3/4 bg-amber-100"></div>
+          <div className="absolute top-0 w-full h-1/4 bg-amber-600" style={{ 
+            clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+          }}></div>
+        </div>
+      </div>
+      
+      {/* People in the distance */}
+      <div ref={peopleRef} className="absolute bottom-[20%] w-[200%] h-[6%]">
+        {/* Person 1 */}
+        <div className="absolute bottom-0 left-[15%] w-3 h-8">
+          <div className="w-3 h-3 bg-blue-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-blue-700 absolute top-2 left-1"></div>
+        </div>
+        
+        {/* Person 2 */}
+        <div className="absolute bottom-0 left-[30%] w-3 h-8">
+          <div className="w-3 h-3 bg-red-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-red-700 absolute top-2 left-1"></div>
+        </div>
+        
+        {/* Person 3 */}
+        <div className="absolute bottom-0 left-[50%] w-3 h-8">
+          <div className="w-3 h-3 bg-green-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-green-700 absolute top-2 left-1"></div>
+        </div>
+        
+        {/* Person 4 */}
+        <div className="absolute bottom-0 left-[70%] w-3 h-8">
+          <div className="w-3 h-3 bg-purple-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-purple-700 absolute top-2 left-1"></div>
+        </div>
+        
+        {/* Second set for seamless scrolling */}
+        <div className="absolute bottom-0 left-[115%] w-3 h-8">
+          <div className="w-3 h-3 bg-blue-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-blue-700 absolute top-2 left-1"></div>
+        </div>
+        
+        <div className="absolute bottom-0 left-[130%] w-3 h-8">
+          <div className="w-3 h-3 bg-red-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-red-700 absolute top-2 left-1"></div>
+        </div>
+        
+        <div className="absolute bottom-0 left-[150%] w-3 h-8">
+          <div className="w-3 h-3 bg-green-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-green-700 absolute top-2 left-1"></div>
+        </div>
+        
+        <div className="absolute bottom-0 left-[170%] w-3 h-8">
+          <div className="w-3 h-3 bg-purple-800 rounded-full"></div>
+          <div className="w-1 h-5 bg-purple-700 absolute top-2 left-1"></div>
+        </div>
       </div>
       
       {/* Background trees - move at medium speed */}

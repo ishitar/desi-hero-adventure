@@ -7,6 +7,7 @@ import Background from './Background';
 import Controls from './Controls';
 import ScoreBoard from './ScoreBoard';
 import GameOverModal from '@/components/UI/GameOverModal';
+import TreasureMap from './TreasureMap';
 
 const GameCanvas: React.FC = () => {
   const { 
@@ -74,6 +75,7 @@ const GameCanvas: React.FC = () => {
       
       <ScoreBoard />
       <Controls />
+      <TreasureMap />
       
       {gameState === 'gameOver' && <GameOverModal />}
     </div>
