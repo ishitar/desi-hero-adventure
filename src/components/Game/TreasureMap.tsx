@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { useGame } from '@/context/GameContext';
-import { Map, Treasure } from 'lucide-react';
+import { Map, Gem } from 'lucide-react';
 
 const TreasureMap: React.FC = () => {
-  const { worldPosition, character, targetLocation } = useGame();
+  const { character, targetLocation } = useGame();
   
   // Calculate relative position in the map
   const getRelativePosition = () => {
@@ -12,9 +12,9 @@ const TreasureMap: React.FC = () => {
     
     // Assume the world is 5000px long and the map represents the entire journey
     const totalDistance = targetLocation.x;
-    const currentProgress = Math.min(100, (worldPosition.current / totalDistance) * 100);
+    const progressPercentage = Math.min(100, (character.x / totalDistance) * 100);
     
-    return currentProgress;
+    return progressPercentage;
   };
   
   return (
@@ -39,7 +39,7 @@ const TreasureMap: React.FC = () => {
         
         {/* Treasure target */}
         <div className="absolute right-1 top-1/2 w-4 h-4 text-amber-900 transform -translate-y-1/2">
-          <Treasure className="w-full h-full animate-pulse-gentle" />
+          <Gem className="w-full h-full animate-pulse-gentle" />
         </div>
         
         {/* Character marker */}

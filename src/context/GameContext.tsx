@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameOver';
@@ -46,6 +47,7 @@ interface GameContextProps {
   moveForward: () => void;
   stopMoving: () => void;
   targetLocation?: {x: number, y: number};
+  worldPosition: React.MutableRefObject<number>; // Added worldPosition
 }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
@@ -599,6 +601,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         moveForward,
         stopMoving,
         targetLocation,
+        worldPosition, // Expose worldPosition to components
       }}
     >
       {children}
