@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameOver';
@@ -9,7 +8,8 @@ interface GameObject {
   y: number;
   width: number;
   height: number;
-  type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue' | 'snake' | 'tiger' | 'vulture' | 'insect' | 'beetle' | 'scorpion';
+  type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue' | 'snake' | 
+         'tiger' | 'vulture' | 'insect' | 'beetle' | 'scorpion' | 'ground-rock' | 'ground-log' | 'ground-fire';
   speed?: number;
   collected?: boolean;
   direction?: 'left' | 'right' | 'up' | 'down';
@@ -281,7 +281,48 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       speed: 1 + Math.random() * 1,
     }));
     
-    const allObstacles = [...newObstacles, ...snakes, ...tigers, ...vultures, ...insects, ...beetles, ...scorpions];
+    const groundRocks: GameObject[] = Array(6).fill(null).map((_, i) => ({
+      id: `rock-${i}`,
+      x: window.innerWidth + (i * 500) + Math.random() * 300,
+      y: 0,
+      width: 40,
+      height: 30,
+      type: 'ground-rock' as const,
+      speed: 0,
+    }));
+    
+    const groundLogs: GameObject[] = Array(5).fill(null).map((_, i) => ({
+      id: `log-${i}`,
+      x: window.innerWidth + (i * 600) + Math.random() * 400,
+      y: 0,
+      width: 60,
+      height: 20,
+      type: 'ground-log' as const,
+      speed: 0,
+    }));
+    
+    const groundFires: GameObject[] = Array(4).fill(null).map((_, i) => ({
+      id: `fire-${i}`,
+      x: window.innerWidth + (i * 700) + Math.random() * 500,
+      y: 0,
+      width: 30,
+      height: 40,
+      type: 'ground-fire' as const,
+      speed: 0,
+    }));
+    
+    const allObstacles = [
+      ...newObstacles, 
+      ...snakes, 
+      ...tigers, 
+      ...vultures, 
+      ...insects, 
+      ...beetles, 
+      ...scorpions,
+      ...groundRocks,
+      ...groundLogs,
+      ...groundFires
+    ];
     
     const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
     const newTreasures: GameObject[] = Array(15).fill(null).map((_, i) => {
@@ -357,10 +398,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (gameState !== 'playing') return;
     
     setObstacles(prev => prev.map(obstacle => {
-      let newX = obstacle.x - (obstacle.speed || worldSpeed.current);
+      let newX = obstacle.x;
       let newY = obstacle.y;
       
-      if (obstacle.type === 'vulture') {
+      if (obstacle.type.startsWith('ground-')) {
+        newX = obstacle.x - worldSpeed.current;
+      } else if (obstacle.type === 'vulture') {
+        newX = obstacle.x - (obstacle.speed || worldSpeed.current);
         newY = (obstacle.flightHeight || 150) + Math.sin(newX / 100) * 30;
       } else if (obstacle.type === 'snake') {
         newX = obstacle.x - (obstacle.speed || worldSpeed.current) * 0.7;
@@ -370,22 +414,40 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (obstacle.direction === 'left') {
           newX -= 0.5;
         } else {
-          newX -= 0.2;
+          newX += 0.2;
         }
       } else if (obstacle.type === 'tiger') {
+        newX = obstacle.x - (obstacle.speed || worldSpeed.current);
         if (Math.random() < 0.05) {
           newX = obstacle.x - (obstacle.speed || worldSpeed.current) * 2;
         }
+      } else {
+        newX = obstacle.x - (obstacle.speed || worldSpeed.current);
       }
       
       if (newX < -obstacle.width) {
-        return {
-          ...obstacle,
-          x: window.innerWidth + Math.random() * 500,
-          y: obstacle.type === 'vulture' ? (150 + Math.random() * 100) : 0,
-          speed: getEnemySpeed(obstacle.type),
-          flightHeight: obstacle.type === 'vulture' ? (150 + Math.random() * 100) : undefined,
-        };
+        if (obstacle.type.startsWith('ground-')) {
+          return {
+            ...obstacle,
+            x: window.innerWidth + Math.random() * 1000,
+            y: 0
+          };
+        } else if (obstacle.type === 'vulture') {
+          return {
+            ...obstacle,
+            x: window.innerWidth + Math.random() * 500,
+            y: 150 + Math.random() * 100,
+            speed: getEnemySpeed(obstacle.type),
+            flightHeight: 150 + Math.random() * 100,
+          };
+        } else {
+          return {
+            ...obstacle,
+            x: window.innerWidth + Math.random() * 500,
+            y: obstacle.type === 'vulture' ? (150 + Math.random() * 100) : 0,
+            speed: getEnemySpeed(obstacle.type),
+          };
+        }
       }
       
       return {

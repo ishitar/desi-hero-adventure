@@ -1,13 +1,114 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const Obstacles: React.FC = () => {
-  const { obstacles, treasures, decorations } = useGame();
+  const { obstacles, treasures, decorations, character, jump } = useGame();
+  
+  useEffect(() => {
+    const checkAndJump = () => {
+      const nearbyObstacle = obstacles.find(obstacle => {
+        return (
+          obstacle.type.includes('ground-') && 
+          obstacle.x > character.x && 
+          obstacle.x < character.x + 200 && 
+          obstacle.x > character.x + 100
+        );
+      });
+      
+      if (nearbyObstacle && !character.jumping) {
+        jump();
+      }
+    };
+    
+    const checkInterval = setInterval(checkAndJump, 300);
+    return () => clearInterval(checkInterval);
+  }, [obstacles, character, jump]);
   
   return (
     <>
-      {/* Render enemies (obstacles) */}
       {obstacles.map(obstacle => {
+        if (obstacle.type === 'ground-rock') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20}%`, // On the ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full bg-gray-500 rounded-lg border-2 border-gray-700"></div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'ground-log') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20}%`, // On the ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full bg-amber-800 rounded-lg"></div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'ground-fire') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20}%`, // On the ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-3/4 bg-red-500 rounded-t-lg animate-pulse"></div>
+              <div className="w-full h-1/4 bg-yellow-500 bottom-0 absolute rounded-b-lg"></div>
+            </div>
+          );
+        }
+        
+        if (obstacle.type === 'snake') {
+          return (
+            <div
+              key={obstacle.id}
+              className="obstacle animate-snake-slither"
+              style={{
+                left: `${obstacle.x}px`,
+                bottom: `${20 - 0.5}%`, // Just above ground
+                width: `${obstacle.width}px`,
+                height: `${obstacle.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Snake body */}
+                <div className="absolute w-full h-full bg-green-600 rounded-full"></div>
+                
+                {/* Snake pattern */}
+                <div className="absolute w-3/4 h-3/4 bg-green-700 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                <div className="absolute w-1/2 h-1/2 bg-green-800 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                
+                {/* Snake head */}
+                <div className="absolute w-1/4 h-3/4 bg-green-600 rounded-lg right-0 top-1/2 -translate-y-1/2">
+                  {/* Eyes */}
+                  <div className="absolute w-1.5 h-1.5 bg-red-600 rounded-full top-1/4 right-1/4"></div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
         if (obstacle.type === 'cow') {
           return (
             <div
@@ -46,36 +147,6 @@ const Obstacles: React.FC = () => {
                 <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-2/5"></div>
                 <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-3/5"></div>
                 <div className="absolute w-2 h-3 bg-gray-300 rounded-b-lg bottom-0 left-4/5"></div>
-              </div>
-            </div>
-          );
-        }
-        
-        if (obstacle.type === 'snake') {
-          return (
-            <div
-              key={obstacle.id}
-              className="obstacle animate-snake-slither"
-              style={{
-                left: `${obstacle.x}px`,
-                bottom: `${20 - 0.5}%`, // Just above ground
-                width: `${obstacle.width}px`,
-                height: `${obstacle.height}px`,
-              }}
-            >
-              <div className="w-full h-full relative">
-                {/* Snake body */}
-                <div className="absolute w-full h-full bg-green-600 rounded-full"></div>
-                
-                {/* Snake pattern */}
-                <div className="absolute w-3/4 h-3/4 bg-green-700 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute w-1/2 h-1/2 bg-green-800 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-                
-                {/* Snake head */}
-                <div className="absolute w-1/4 h-3/4 bg-green-600 rounded-lg right-0 top-1/2 -translate-y-1/2">
-                  {/* Eyes */}
-                  <div className="absolute w-1.5 h-1.5 bg-red-600 rounded-full top-1/4 right-1/4"></div>
-                </div>
               </div>
             </div>
           );
@@ -278,7 +349,6 @@ const Obstacles: React.FC = () => {
         return null;
       })}
       
-      {/* Render treasures */}
       {treasures.map(treasure => (
         <div
           key={treasure.id}
@@ -310,7 +380,6 @@ const Obstacles: React.FC = () => {
         </div>
       ))}
       
-      {/* Render decorations */}
       {decorations.map(decoration => {
         if (decoration.type === 'temple') {
           return (

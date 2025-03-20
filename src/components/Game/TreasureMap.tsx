@@ -4,7 +4,7 @@ import { useGame } from '@/context/GameContext';
 import { Map, Gem } from 'lucide-react';
 
 const TreasureMap: React.FC = () => {
-  const { character, targetLocation } = useGame();
+  const { character, targetLocation, worldPosition } = useGame();
   
   // Calculate relative position in the map
   const getRelativePosition = () => {
@@ -12,7 +12,7 @@ const TreasureMap: React.FC = () => {
     
     // Assume the world is 5000px long and the map represents the entire journey
     const totalDistance = targetLocation.x;
-    const progressPercentage = Math.min(100, (character.x / totalDistance) * 100);
+    const progressPercentage = Math.min(100, (worldPosition.current / totalDistance) * 100);
     
     return progressPercentage;
   };
