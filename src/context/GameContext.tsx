@@ -212,7 +212,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         y: 0,
         width: 200,
         height: 300,
-        type: 'temple',
+        type: 'temple' as const,
       })),
       
       // Banners
@@ -222,7 +222,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         y: 100 + Math.random() * 100,
         width: 100,
         height: 50,
-        type: 'banner',
+        type: 'banner' as const,
       })),
       
       // Platforms
@@ -232,7 +232,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         y: 200 + Math.random() * 150,
         width: 150,
         height: 30,
-        type: 'platform',
+        type: 'platform' as const,
       })),
     ];
     
