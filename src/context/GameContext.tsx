@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameOver';
@@ -537,6 +536,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return {
             ...obstacle,
             x: window.innerWidth + Math.random() * 500,
+            // Fix here - don't compare types directly like this
             y: obstacle.type === 'vulture' ? (150 + Math.random() * 100) : 0,
             speed: getEnemySpeed(obstacle.type),
           };
