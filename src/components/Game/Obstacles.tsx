@@ -417,68 +417,194 @@ const Obstacles: React.FC = () => {
           );
         }
         
-        if (decoration.type === 'banner') {
+        if (decoration.type === 'google-temple') {
           return (
             <div
               key={decoration.id}
-              className="banner animate-float-banner"
+              className="temple"
               style={{
                 left: `${decoration.x}px`,
-                top: `${decoration.y}px`,
+                bottom: `${20 - 1}%`, // On the ground
                 width: `${decoration.width}px`,
                 height: `${decoration.height}px`,
               }}
             >
               <div className="w-full h-full relative">
-                {/* Banner pole */}
-                <div className="absolute w-1 h-full bg-gray-700 left-0"></div>
+                {/* Temple base */}
+                <div className="absolute w-full h-2/3 bg-white rounded-lg bottom-0"></div>
                 
-                {/* Banner cloth - tricolor like Indian flag */}
-                <div className="absolute w-full h-1/3 bg-game-saffron top-0 left-0"></div>
-                <div className="absolute w-full h-1/3 bg-white top-1/3 left-0">
-                  {/* Ashoka Chakra */}
-                  <div className="absolute w-4 h-4 rounded-full border-2 border-game-blue left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+                {/* Temple roof */}
+                <div className="absolute w-full h-1/3 bg-amber-800 top-0 left-0" style={{ 
+                  clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+                }}>
                 </div>
-                <div className="absolute w-full h-1/3 bg-game-green bottom-0 left-0"></div>
+                
+                {/* Temple dome */}
+                <div className="absolute w-1/4 h-1/4 bg-game-saffron rounded-full -top-6 left-1/2 -translate-x-1/2"></div>
+                
+                {/* Temple entrance */}
+                <div className="absolute w-1/3 h-1/3 bg-amber-900 rounded-t-lg bottom-0 left-1/2 -translate-x-1/2"></div>
+                
+                {/* Google Logo on Temple */}
+                <div className="absolute w-3/4 h-1/4 flex items-center justify-center top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl">
+                  {/* Letter G */}
+                  <div className="h-full aspect-square bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                    <div className="h-3/4 aspect-square bg-white rounded-full flex items-center justify-center">
+                      <div className="h-1/2 w-1/2 bg-blue-500 absolute bottom-1.5 right-1.5"></div>
+                    </div>
+                  </div>
+                  {/* Letter o */}
+                  <div className="h-full aspect-square bg-red-500 rounded-full flex items-center justify-center mr-1">
+                    <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                  </div>
+                  {/* Letter o */}
+                  <div className="h-full aspect-square bg-yellow-500 rounded-full flex items-center justify-center mr-1">
+                    <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                  </div>
+                  {/* Letter g */}
+                  <div className="h-full aspect-square bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                    <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                  </div>
+                  {/* Letter l */}
+                  <div className="h-full aspect-square bg-green-500 rounded-full flex items-center justify-center mr-1">
+                    <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                  </div>
+                  {/* Letter e */}
+                  <div className="h-full aspect-square bg-red-500 rounded-full flex items-center justify-center">
+                    <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                  </div>
+                </div>
               </div>
             </div>
           );
+        }
+        
+        if (decoration.type === 'adobe-temple') {
+          return (
+            <div
+              key={decoration.id}
+              className="temple"
+              style={{
+                left: `${decoration.x}px`,
+                bottom: `${20 - 1}%`, // On the ground
+                width: `${decoration.width}px`,
+                height: `${decoration.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Temple base */}
+                <div className="absolute w-full h-2/3 bg-gray-100 rounded-lg bottom-0"></div>
+                
+                {/* Temple roof */}
+                <div className="absolute w-full h-1/3 bg-amber-800 top-0 left-0" style={{ 
+                  clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+                }}>
+                </div>
+                
+                {/* Temple dome */}
+                <div className="absolute w-1/4 h-1/4 bg-game-saffron rounded-full -top-6 left-1/2 -translate-x-1/2"></div>
+                
+                {/* Temple entrance */}
+                <div className="absolute w-1/3 h-1/3 bg-amber-900 rounded-t-lg bottom-0 left-1/2 -translate-x-1/2"></div>
+                
+                {/* Adobe Logo on Temple */}
+                <div className="absolute w-2/3 h-1/4 flex items-center justify-center top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg">
+                  <div className="h-full aspect-square bg-red-600 flex items-center justify-center text-white font-bold">
+                    A
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (decoration.type === 'mosque') {
+          return (
+            <div
+              key={decoration.id}
+              className="mosque"
+              style={{
+                left: `${decoration.x}px`,
+                bottom: `${20 - 1}%`, // On the ground
+                width: `${decoration.width}px`,
+                height: `${decoration.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Mosque base */}
+                <div className="absolute w-full h-2/3 bg-white rounded-lg bottom-0"></div>
+                
+                {/* Mosque dome */}
+                <div className="absolute w-1/2 h-1/4 bg-green-600 rounded-t-full top-0 left-1/4"></div>
+                
+                {/* Mosque minarets */}
+                <div className="absolute w-1/8 h-1/2 bg-white rounded-t-lg bottom-1/3 left-0"></div>
+                <div className="absolute w-1/8 h-1/2 bg-white rounded-t-lg bottom-1/3 right-0"></div>
+                
+                {/* Minaret tops */}
+                <div className="absolute w-3 h-3 bg-green-600 rounded-full -top-1 left-1/12"></div>
+                <div className="absolute w-3 h-3 bg-green-600 rounded-full -top-1 right-1/12"></div>
+                
+                {/* Mosque entrance */}
+                <div className="absolute w-1/4 h-1/4 bg-green-700 rounded-t-lg bottom-0 left-3/8"></div>
+                
+                {/* Mosque windows */}
+                <div className="absolute w-1/6 h-1/6 bg-sky-100 rounded-t-full top-1/3 left-1/4"></div>
+                <div className="absolute w-1/6 h-1/6 bg-sky-100 rounded-t-full top-1/3 right-1/4"></div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (decoration.type === 'gurudwara') {
+          return (
+            <div
+              key={decoration.id}
+              className="gurudwara"
+              style={{
+                left: `${decoration.x}px`,
+                bottom: `${20 - 1}%`, // On the ground
+                width: `${decoration.width}px`,
+                height: `${decoration.height}px`,
+              }}
+            >
+              <div className="w-full h-full relative">
+                {/* Gurudwara base */}
+                <div className="absolute w-full h-3/4 bg-white rounded-lg bottom-0"></div>
+                
+                {/* Gurudwara dome - onion shape */}
+                <div className="absolute w-2/5 h-1/4 bg-yellow-500 rounded-t-full top-0 left-1/3"></div>
+                <div className="absolute w-1/10 h-1/10 bg-yellow-500 top-[-10px] left-1/2 -translate-x-1/2"></div>
+                
+                {/* Gurudwara spire */}
+                <div className="absolute w-1 h-1/6 bg-yellow-600 top-[-25px] left-1/2 -translate-x-1/2"></div>
+                
+                {/* Gurudwara entrance */}
+                <div className="absolute w-1/3 h-1/3 bg-amber-100 rounded-t-lg bottom-0 left-1/3"></div>
+                
+                {/* Side small domes */}
+                <div className="absolute w-1/5 h-1/6 bg-yellow-500 rounded-t-full top-1/10 left-1/8"></div>
+                <div className="absolute w-1/5 h-1/6 bg-yellow-500 rounded-t-full top-1/10 right-1/8"></div>
+                
+                {/* Flags */}
+                <div className="absolute w-1/20 h-1/5 bg-white left-1/8 top-0">
+                  <div className="absolute w-full h-1/4 bg-blue-600 top-0"></div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
+        if (decoration.type === 'banner') {
+          return null;
         }
         
         if (decoration.type === 'platform') {
-          return (
-            <div
-              key={decoration.id}
-              className="platform"
-              style={{
-                left: `${decoration.x}px`,
-                top: `${decoration.y}px`,
-                width: `${decoration.width}px`,
-                height: `${decoration.height}px`,
-              }}
-            >
-              <div className="w-full h-full bg-game-earth rounded-lg border-t-4 border-green-800"></div>
-            </div>
-          );
+          return null;
         }
         
         if (decoration.type === 'clue') {
-          return (
-            <div
-              key={decoration.id}
-              className="clue animate-bounce-slow"
-              style={{
-                left: `${decoration.x}px`,
-                top: `${decoration.y}px`,
-                width: `${decoration.width}px`,
-                height: `${decoration.height}px`,
-              }}
-            >
-              <div className="w-full h-full bg-amber-100 border-2 border-amber-800 rounded-lg flex items-center justify-center text-amber-900 font-bold">
-                ?
-              </div>
-            </div>
-          );
+          return null;
         }
         
         return null;

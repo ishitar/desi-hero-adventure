@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameOver';
@@ -9,7 +10,8 @@ interface GameObject {
   width: number;
   height: number;
   type: 'cow' | 'coin' | 'gem' | 'chest' | 'temple' | 'banner' | 'platform' | 'clue' | 'snake' | 
-         'tiger' | 'vulture' | 'insect' | 'beetle' | 'scorpion' | 'ground-rock' | 'ground-log' | 'ground-fire';
+         'tiger' | 'vulture' | 'insect' | 'beetle' | 'scorpion' | 'ground-rock' | 'ground-log' | 'ground-fire' |
+         'dhokla' | 'mithai' | 'vadapav' | 'jalebi' | 'ladoo' | 'gurudwara' | 'mosque' | 'google-temple' | 'adobe-temple';
   speed?: number;
   collected?: boolean;
   direction?: 'left' | 'right' | 'up' | 'down';
@@ -26,6 +28,13 @@ interface Character {
   lives: number;
 }
 
+interface SweetCounts {
+  [key: string]: {
+    collected: number;
+    total: number;
+  };
+}
+
 interface GameContextProps {
   gameState: GameState;
   score: number;
@@ -36,6 +45,8 @@ interface GameContextProps {
   obstacles: GameObject[];
   treasures: GameObject[];
   decorations: GameObject[];
+  sweets: GameObject[];
+  sweetCounts: SweetCounts;
   startGame: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
@@ -47,7 +58,9 @@ interface GameContextProps {
   moveForward: () => void;
   stopMoving: () => void;
   targetLocation?: {x: number, y: number};
-  worldPosition: React.MutableRefObject<number>; // Added worldPosition
+  worldPosition: React.MutableRefObject<number>;
+  showTreasureModal: boolean;
+  setShowTreasureModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
@@ -78,10 +91,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [obstacles, setObstacles] = useState<GameObject[]>([]);
   const [treasures, setTreasures] = useState<GameObject[]>([]);
   const [decorations, setDecorations] = useState<GameObject[]>([]);
+  const [sweets, setSweets] = useState<GameObject[]>([]);
+  const [sweetCounts, setSweetCounts] = useState<SweetCounts>({});
   const [gameLoopId, setGameLoopId] = useState<number | null>(null);
   const worldPosition = useRef(0);
   const worldSpeed = useRef(3);
   const [targetLocation, setTargetLocation] = useState<{x: number, y: number} | undefined>(undefined);
+  const [showTreasureModal, setShowTreasureModal] = useState(false);
 
   useEffect(() => {
     const savedHighScore = localStorage.getItem('indianTreasureHuntHighScore');
@@ -122,6 +138,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 1000 / 60);
     
     setGameLoopId(loopId);
+    setShowTreasureModal(false);
   }, []);
 
   const pauseGame = useCallback(() => {
@@ -351,7 +368,63 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setTotalTreasures(newTreasures.length);
     
+    // Create Indian sweets
+    const sweetTypes: Array<'dhokla' | 'mithai' | 'vadapav' | 'jalebi' | 'ladoo'> = 
+      ['dhokla', 'mithai', 'vadapav', 'jalebi', 'ladoo'];
+    
+    const newSweets: GameObject[] = [];
+    
+    // Create 5 of each sweet type
+    sweetTypes.forEach(type => {
+      const sweetsOfType = Array(5).fill(null).map((_, i) => ({
+        id: `${type}-${i}`,
+        x: window.innerWidth + (i * 300) + Math.random() * 500,
+        y: 100 + Math.random() * 200,
+        width: 30,
+        height: 30,
+        type,
+        collected: false,
+      }));
+      
+      newSweets.push(...sweetsOfType);
+    });
+    
+    // Initialize sweet counts
+    const initialSweetCounts: SweetCounts = {};
+    sweetTypes.forEach(type => {
+      initialSweetCounts[type] = {
+        collected: 0,
+        total: 5
+      };
+    });
+    
+    setSweetCounts(initialSweetCounts);
+    setSweets(newSweets);
+    
+    // Create special temples with company logos
+    const googleTemple: GameObject = {
+      id: 'google-temple',
+      x: window.innerWidth + 1200,
+      y: 0,
+      width: 300,
+      height: 350,
+      type: 'google-temple',
+    };
+    
+    const adobeTemple: GameObject = {
+      id: 'adobe-temple',
+      x: window.innerWidth + 2500,
+      y: 0,
+      width: 300,
+      height: 350,
+      type: 'adobe-temple',
+    };
+    
     const newDecorations: GameObject[] = [
+      googleTemple,
+      adobeTemple,
+      
+      // Traditional temples
       ...Array(3).fill(null).map((_, i) => ({
         id: `temple-${i}`,
         x: window.innerWidth + (i * 800) + Math.random() * 400,
@@ -359,6 +432,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         width: 200,
         height: 300,
         type: 'temple' as const,
+      })),
+      
+      // Add mosques
+      ...Array(2).fill(null).map((_, i) => ({
+        id: `mosque-${i}`,
+        x: window.innerWidth + (i * 1200) + Math.random() * 600,
+        y: 0,
+        width: 180,
+        height: 280,
+        type: 'mosque' as const,
+      })),
+      
+      // Add gurdwaras
+      ...Array(2).fill(null).map((_, i) => ({
+        id: `gurudwara-${i}`,
+        x: window.innerWidth + (i * 1500) + Math.random() * 700,
+        y: 0,
+        width: 200,
+        height: 320,
+        type: 'gurudwara' as const,
       })),
       
       ...Array(5).fill(null).map((_, i) => ({
@@ -463,6 +556,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         case 'snake': return 1.5 + Math.random() * 1.5;
         case 'tiger': return 3 + Math.random() * 2;
         case 'vulture': return 2.5 + Math.random() * 1.5;
+        case 'insect': return 3 + Math.random() * 2;
+        case 'beetle': return 1.5 + Math.random() * 1.5;
+        case 'scorpion': return 1 + Math.random() * 1;
         default: return 2 + Math.random() * 2;
       }
     }
@@ -523,20 +619,56 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return updatedTreasures;
     });
     
+    // Update Indian sweets
+    setSweets(prev => {
+      return prev.map(sweet => {
+        if (sweet.collected) return sweet;
+        
+        const newX = sweet.x - worldSpeed.current;
+        
+        if (newX < -sweet.width) {
+          return {
+            ...sweet,
+            x: window.innerWidth + Math.random() * 500,
+            y: 100 + Math.random() * 200,
+          };
+        }
+        
+        return {
+          ...sweet,
+          x: newX,
+        };
+      });
+    });
+    
     setDecorations(prev => prev.map(decoration => {
       let speed = 1;
       
       if (decoration.type === 'platform' || decoration.type === 'clue') {
         speed = worldSpeed.current;
+      } else if (decoration.type === 'google-temple' || decoration.type === 'adobe-temple') {
+        speed = worldSpeed.current * 0.8; // Move slower to create parallax effect
+      } else {
+        speed = worldSpeed.current * 0.9; // Slower movement for background elements
       }
       
       const newX = decoration.x - speed;
       
       if (newX < -decoration.width) {
-        if (decoration.type === 'temple') {
+        if (decoration.type === 'temple' || decoration.type === 'mosque' || decoration.type === 'gurudwara') {
           return {
             ...decoration,
-            x: window.innerWidth + Math.random() * 400,
+            x: window.innerWidth + Math.random() * 500,
+          };
+        } else if (decoration.type === 'google-temple') {
+          return {
+            ...decoration,
+            x: window.innerWidth + 1500 + Math.random() * 500,
+          };
+        } else if (decoration.type === 'adobe-temple') {
+          return {
+            ...decoration,
+            x: window.innerWidth + 2000 + Math.random() * 500,
           };
         } else if (decoration.type === 'banner') {
           return {
@@ -602,6 +734,40 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }));
     }
     
+    // Check for sweet collections
+    const sweetCollisions = sweets.filter(sweet => (
+      !sweet.collected &&
+      character.x < sweet.x + sweet.width &&
+      character.x + character.width > sweet.x &&
+      character.y < sweet.y + sweet.height &&
+      character.y + character.height > sweet.y
+    ));
+    
+    if (sweetCollisions.length > 0) {
+      setSweets(prev => prev.map(sweet => {
+        if (sweetCollisions.some(s => s.id === sweet.id)) {
+          return { ...sweet, collected: true };
+        }
+        return sweet;
+      }));
+      
+      // Update sweet counts
+      setSweetCounts(prev => {
+        const newCounts = { ...prev };
+        
+        sweetCollisions.forEach(sweet => {
+          if (newCounts[sweet.type]) {
+            newCounts[sweet.type].collected += 1;
+          }
+        });
+        
+        return newCounts;
+      });
+      
+      // Add score for collecting sweets
+      setScore(prev => prev + (sweetCollisions.length * 25));
+    }
+    
     const treasureCollisions = treasures.filter(treasure => (
       !treasure.collected &&
       character.x < treasure.x + treasure.width &&
@@ -630,7 +796,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     setScore(prev => prev + 0.1);
-  }, [gameState, character, obstacles, treasures, gameOver]);
+  }, [gameState, character, obstacles, treasures, gameOver, sweets]);
   
   useEffect(() => {
     return () => {
@@ -652,6 +818,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         obstacles,
         treasures,
         decorations,
+        sweets,
+        sweetCounts,
         startGame,
         pauseGame,
         resumeGame,
@@ -663,7 +831,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         moveForward,
         stopMoving,
         targetLocation,
-        worldPosition, // Expose worldPosition to components
+        worldPosition,
+        showTreasureModal,
+        setShowTreasureModal,
       }}
     >
       {children}

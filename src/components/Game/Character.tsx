@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
-// Character component representing a Bollywood hero (Shah Rukh Khan inspired)
+// Character component representing a Sikh character with turban
 const Character: React.FC = () => {
   const { character, moveForward, jump } = useGame();
   const [expression, setExpression] = useState('normal');
@@ -32,7 +32,7 @@ const Character: React.FC = () => {
   // Character styling based on state
   const characterClasses = `character ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''}`;
   
-  // Simple character representation with CSS - styled as SRK
+  // Sikh character representation with turban
   return (
     <div 
       className={characterClasses}
@@ -63,21 +63,23 @@ const Character: React.FC = () => {
             </div>
           )}
           
-          {/* SRK's distinctive hairstyle */}
-          <div className="absolute w-24 h-6 bg-black rounded-t-lg -top-4 left-1/2 -translate-x-1/2"></div>
-          <div className="absolute w-16 h-2 bg-black top-0 left-1/2 -translate-x-1/2 rotate-45 origin-left"></div>
-          <div className="absolute w-16 h-2 bg-black top-0 left-1/2 -translate-x-1/2 -rotate-45 origin-right"></div>
+          {/* Beard */}
+          <div className="absolute w-14 h-10 bg-black rounded-b-xl bottom-[-8px] left-1/2 -translate-x-1/2"></div>
           
-          {/* Signature dimples */}
-          <div className="absolute w-2 h-2 bg-amber-900 rounded-full left-3 top-11"></div>
-          <div className="absolute w-2 h-2 bg-amber-900 rounded-full right-3 top-11"></div>
+          {/* Turban (Sikh Pagri) */}
+          <div className="absolute w-26 h-12 bg-blue-600 rounded-t-full -top-10 left-1/2 -translate-x-1/2"></div>
+          <div className="absolute w-24 h-10 bg-blue-600 rounded-t-full -top-8 left-1/2 -translate-x-1/2"></div>
+          <div className="absolute w-24 h-3 bg-yellow-500 top-[-8px] left-1/2 -translate-x-1/2"></div>
+          
+          {/* Turban top knot */}
+          <div className="absolute w-6 h-6 bg-blue-600 rounded-full top-[-15px] left-1/2 -translate-x-1/2"></div>
         </div>
         
         {/* Character body */}
         <div className="absolute w-24 h-32 bg-blue-700 rounded-lg top-16 left-1/2 -translate-x-1/2">
-          {/* Clothing details - typical Bollywood hero outfit */}
-          <div className="absolute w-24 h-12 bg-white rounded-b-lg top-0 left-0"></div>
-          <div className="absolute w-8 h-10 bg-blue-700 top-2 left-1/2 -translate-x-1/2"></div>
+          {/* Clothing details - traditional Punjabi outfit */}
+          <div className="absolute w-24 h-18 bg-white rounded-b-lg top-0 left-0"></div>
+          <div className="absolute w-10 h-12 bg-blue-700 top-0 left-1/2 -translate-x-1/2"></div>
           
           {/* Arms */}
           <div className={`absolute w-8 h-16 bg-amber-700 rounded-full -left-4 top-4 ${character.running ? 'animate-bounce-horizontal' : ''}`}></div>

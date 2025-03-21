@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { Map, Gem } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const TreasureMap: React.FC = () => {
-  const { character, targetLocation, worldPosition } = useGame();
+  const { character, targetLocation, worldPosition, showTreasureModal, setShowTreasureModal } = useGame();
+  const { toast } = useToast();
   
   // Calculate relative position in the map
   const getRelativePosition = () => {
@@ -16,6 +18,17 @@ const TreasureMap: React.FC = () => {
     
     return progressPercentage;
   };
+  
+  // Check if treasure is reached
+  useEffect(() => {
+    if (targetLocation && worldPosition.current >= targetLocation.x && !showTreasureModal) {
+      setShowTreasureModal(true);
+      toast({
+        title: "Treasure Found!",
+        description: "You've reached the treasure! Claim your TOI Plus membership.",
+      });
+    }
+  }, [worldPosition, targetLocation, showTreasureModal, setShowTreasureModal, toast]);
   
   return (
     <div className="fixed top-4 right-4 w-36 h-20 bg-amber-100/80 rounded-lg border-2 border-amber-800 shadow-md p-2">
