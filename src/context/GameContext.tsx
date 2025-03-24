@@ -533,11 +533,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             flightHeight: 150 + Math.random() * 100,
           };
         } else {
+          const newY = isVultureType(obstacle.type) ? (150 + Math.random() * 100) : 0;
           return {
             ...obstacle,
             x: window.innerWidth + Math.random() * 500,
-            // Fix here - don't compare types directly like this
-            y: obstacle.type === 'vulture' ? (150 + Math.random() * 100) : 0,
+            y: newY,
             speed: getEnemySpeed(obstacle.type),
           };
         }
@@ -550,7 +550,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }));
     
-    function getEnemySpeed(type: string) {
+    function isVultureType(type: GameObject['type']): boolean {
+      return type === 'vulture';
+    }
+    
+    function getEnemySpeed(type: GameObject['type']) {
       switch(type) {
         case 'cow': return 2 + Math.random() * 2;
         case 'snake': return 1.5 + Math.random() * 1.5;
@@ -619,7 +623,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return updatedTreasures;
     });
     
-    // Update Indian sweets
     setSweets(prev => {
       return prev.map(sweet => {
         if (sweet.collected) return sweet;
@@ -734,7 +737,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }));
     }
     
-    // Check for sweet collections
     const sweetCollisions = sweets.filter(sweet => (
       !sweet.collected &&
       character.x < sweet.x + sweet.width &&
@@ -751,7 +753,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return sweet;
       }));
       
-      // Update sweet counts
       setSweetCounts(prev => {
         const newCounts = { ...prev };
         
@@ -764,7 +765,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return newCounts;
       });
       
-      // Add score for collecting sweets
       setScore(prev => prev + (sweetCollisions.length * 25));
     }
     
