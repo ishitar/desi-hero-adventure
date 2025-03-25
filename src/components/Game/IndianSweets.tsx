@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const IndianSweets: React.FC = () => {
-  const { sweets, collectSweet } = useGame();
+  const { sweets } = useGame();
 
   // Use useEffect to check for sweet collection
   useEffect(() => {
