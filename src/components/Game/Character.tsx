@@ -6,6 +6,7 @@ const Character: React.FC = () => {
   const { character, moveForward, jump } = useGame();
   const [expression, setExpression] = useState('normal');
   const [animationFrame, setAnimationFrame] = useState(0);
+  const [glowing, setGlowing] = useState(false);
   
   // Auto-run the character forward
   useEffect(() => {
@@ -41,7 +42,7 @@ const Character: React.FC = () => {
   }, [character.running]);
   
   // Character styling based on state
-  const characterClasses = `character absolute ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''}`;
+  const characterClasses = `character absolute ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''} ${glowing ? 'character-glow' : ''}`;
   
   // Indian character representation with traditional attire
   return (

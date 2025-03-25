@@ -77,9 +77,9 @@ const GameCanvas: React.FC = () => {
         <FogEffect />
         <AnimatedBanners />
         <Fireflies />
+        <IndianSweets />
         <Character />
         <Obstacles />
-        <IndianSweets />
         
         {/* Ground */}
         <div className="ground"></div>
