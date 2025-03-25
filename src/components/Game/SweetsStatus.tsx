@@ -12,6 +12,7 @@ const SweetsStatus: React.FC = () => {
         return (
           <div className="w-6 h-6 relative bg-yellow-200 rounded-sm border border-yellow-600">
             <div className="w-full h-1/4 bg-yellow-400 absolute top-0"></div>
+            <div className="w-2/3 h-2/3 bg-yellow-300 rounded-sm absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
           </div>
         );
       case 'mithai':
@@ -26,18 +27,21 @@ const SweetsStatus: React.FC = () => {
           <div className="w-6 h-6 relative">
             <div className="w-full h-2/3 bg-amber-200 rounded-full absolute bottom-0"></div>
             <div className="w-3/4 h-1/2 bg-amber-700 rounded-md absolute top-1/4 left-1/2 -translate-x-1/2"></div>
+            <div className="w-1/2 h-1/4 bg-green-700 rounded-sm absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-60"></div>
           </div>
         );
       case 'jalebi':
         return (
           <div className="w-6 h-6 relative bg-orange-400 rounded-full border-2 border-orange-600">
             <div className="w-2/3 h-2/3 bg-orange-300 rounded-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="w-1/3 h-1/3 bg-yellow-300 rounded-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
           </div>
         );
       case 'ladoo':
         return (
           <div className="w-6 h-6 relative bg-yellow-500 rounded-full border border-yellow-600">
             <div className="w-1/3 h-1/3 bg-yellow-300 rounded-full absolute left-1/3 top-1/3"></div>
+            <div className="w-1/4 h-1/4 bg-yellow-200 rounded-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
           </div>
         );
       default:
@@ -57,6 +61,7 @@ const SweetsStatus: React.FC = () => {
         >
           <div className="relative">
             {getSweetIcon(type)}
+            <div className={`absolute -top-1 -right-1 w-3 h-3 ${count.collected > 0 ? 'bg-green-500' : 'bg-gray-400'} rounded-full border border-white`}></div>
           </div>
           <span className="text-xs font-semibold text-game-navy">
             {count.collected}/{count.total} {type.charAt(0).toUpperCase() + type.slice(1)}

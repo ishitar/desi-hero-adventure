@@ -367,23 +367,36 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setTotalTreasures(newTreasures.length);
     
-    // Create Indian sweets
+    // Create Indian sweets with improved positioning
     const sweetTypes: Array<'dhokla' | 'mithai' | 'vadapav' | 'jalebi' | 'ladoo'> = 
       ['dhokla', 'mithai', 'vadapav', 'jalebi', 'ladoo'];
     
     const newSweets: GameObject[] = [];
     
-    // Create 5 of each sweet type
+    // Create 5 of each sweet type with better height distribution
     sweetTypes.forEach(type => {
-      const sweetsOfType = Array(5).fill(null).map((_, i) => ({
-        id: `${type}-${i}`,
-        x: window.innerWidth + (i * 300) + Math.random() * 500,
-        y: 100 + Math.random() * 200,
-        width: 30,
-        height: 30,
-        type,
-        collected: false,
-      }));
+      const sweetsOfType = Array(8).fill(null).map((_, i) => {
+        // Ensure most sweets are higher in the air requiring jumps
+        // Distribute heights: 20% low, 50% medium, 30% high
+        let heightLevel;
+        if (i < 2) { // 25% - low
+          heightLevel = 50 + Math.random() * 50; // Lower height
+        } else if (i < 6) { // 50% - medium
+          heightLevel = 100 + Math.random() * 80; // Medium height
+        } else { // 25% - high
+          heightLevel = 180 + Math.random() * 70; // Higher height
+        }
+        
+        return {
+          id: `${type}-${i}`,
+          x: window.innerWidth + (i * 300) + Math.random() * 500,
+          y: heightLevel, // Varied heights
+          width: 30,
+          height: 30,
+          type,
+          collected: false,
+        };
+      });
       
       newSweets.push(...sweetsOfType);
     });
@@ -393,7 +406,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     sweetTypes.forEach(type => {
       initialSweetCounts[type] = {
         collected: 0,
-        total: 5
+        total: 8 // Updated total sweets per type
       };
     });
     
@@ -627,6 +640,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return updatedTreasures;
     });
     
+    // Update sweets with improved respawn logic
     setSweets(prev => {
       return prev.map(sweet => {
         if (sweet.collected) return sweet;
@@ -634,10 +648,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const newX = sweet.x - worldSpeed.current;
         
         if (newX < -sweet.width) {
+          // When respawning, ensure height variation
+          let newHeight;
+          if (Math.random() < 0.3) { // 30% - low
+            newHeight = 50 + Math.random() * 50; // Lower height
+          } else if (Math.random() < 0.7) { // 40% - medium
+            newHeight = 100 + Math.random() * 80; // Medium height
+          } else { // 30% - high
+            newHeight = 180 + Math.random() * 70; // Higher height
+          }
+          
           return {
             ...sweet,
             x: window.innerWidth + Math.random() * 500,
-            y: 100 + Math.random() * 200,
+            y: newHeight, // Varied heights for respawns
           };
         }
         
