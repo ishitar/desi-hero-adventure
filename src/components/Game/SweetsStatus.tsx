@@ -10,13 +10,16 @@ const SweetsStatus: React.FC = () => {
     switch(type) {
       case 'dhokla':
         return (
-          <div className="w-6 h-6 bg-yellow-200 rounded-sm border border-yellow-600">
-            <div className="w-full h-1/4 bg-yellow-400 top-0 absolute"></div>
+          <div className="w-6 h-6 relative bg-yellow-200 rounded-sm border border-yellow-600">
+            <div className="w-full h-1/4 bg-yellow-400 absolute top-0"></div>
           </div>
         );
       case 'mithai':
         return (
-          <div className="w-6 h-6 bg-orange-300 rounded-md border border-orange-600"></div>
+          <div className="w-6 h-6 relative bg-orange-300 rounded-md border border-orange-600">
+            <div className="w-2/3 h-2/3 bg-orange-400 rounded-sm absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="w-1/2 h-1/2 bg-gray-200 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30"></div>
+          </div>
         );
       case 'vadapav':
         return (
@@ -27,11 +30,15 @@ const SweetsStatus: React.FC = () => {
         );
       case 'jalebi':
         return (
-          <div className="w-6 h-6 bg-orange-400 rounded-full border-2 border-orange-600"></div>
+          <div className="w-6 h-6 relative bg-orange-400 rounded-full border-2 border-orange-600">
+            <div className="w-2/3 h-2/3 bg-orange-300 rounded-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+          </div>
         );
       case 'ladoo':
         return (
-          <div className="w-6 h-6 bg-yellow-500 rounded-full border border-yellow-600"></div>
+          <div className="w-6 h-6 relative bg-yellow-500 rounded-full border border-yellow-600">
+            <div className="w-1/3 h-1/3 bg-yellow-300 rounded-full absolute left-1/3 top-1/3"></div>
+          </div>
         );
       default:
         return <Gift className="w-5 h-5 text-pink-500" />;
