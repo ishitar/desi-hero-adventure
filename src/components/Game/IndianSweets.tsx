@@ -1,33 +1,33 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const IndianSweets: React.FC = () => {
   const { sweets, character, collectSweet, worldPosition } = useGame();
+  const lastCharacterPos = useRef({ x: 0, y: 0 });
 
-  // Check for collision with character
   useEffect(() => {
     const checkCollisions = () => {
+      const currentPos = { x: character.x, y: character.y };
+      
       sweets.forEach(sweet => {
-        // Skip already collected sweets
         if (sweet.collected) return;
         
-        // Improved collision detection that's more forgiving
+        const buffer = 15;
         const characterHitbox = {
-          left: character.x,
-          right: character.x + character.width,
-          top: character.y,
-          bottom: character.y + character.height
+          left: Math.min(lastCharacterPos.current.x, character.x) - buffer,
+          right: Math.max(lastCharacterPos.current.x, character.x) + character.width + buffer,
+          top: Math.min(lastCharacterPos.current.y, character.y) - buffer,
+          bottom: Math.max(lastCharacterPos.current.y, character.y) + character.height + buffer
         };
         
+        const sweetBuffer = ['ladoo', 'jalebi'].includes(sweet.type) ? buffer * 1.5 : buffer;
         const sweetHitbox = {
-          left: sweet.x,
-          right: sweet.x + sweet.width,
-          top: sweet.y,
-          bottom: sweet.y + sweet.height
+          left: sweet.x - sweetBuffer,
+          right: sweet.x + sweet.width + sweetBuffer,
+          top: sweet.y - sweetBuffer,
+          bottom: sweet.y + sweet.height + sweetBuffer
         };
         
-        // More generous overlap check - even slight touches count
         const horizontalOverlap = 
           characterHitbox.right >= sweetHitbox.left && 
           characterHitbox.left <= sweetHitbox.right;
@@ -36,14 +36,19 @@ const IndianSweets: React.FC = () => {
           characterHitbox.bottom >= sweetHitbox.top && 
           characterHitbox.top <= sweetHitbox.bottom;
         
-        // If there's any overlap at all, collect the sweet
-        if (horizontalOverlap && verticalOverlap) {
+        const isJumpingUp = character.jumping && lastCharacterPos.current.y > character.y;
+        const extraVerticalCheck = isJumpingUp && 
+          Math.abs(characterHitbox.top - sweetHitbox.bottom) < buffer * 2;
+        
+        if ((horizontalOverlap && verticalOverlap) || (horizontalOverlap && extraVerticalCheck)) {
           collectSweet(sweet.id);
+          console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
         }
       });
+      
+      lastCharacterPos.current = currentPos;
     };
 
-    // Check for collisions on each animation frame
     const animationId = requestAnimationFrame(checkCollisions);
     return () => cancelAnimationFrame(animationId);
   }, [character, sweets, collectSweet]);
@@ -53,7 +58,6 @@ const IndianSweets: React.FC = () => {
       {sweets.map(sweet => {
         if (sweet.collected) return null;
         
-        // Calculate a dynamic y position that makes sweets appear only when character jumps
         const sweetY = sweet.y;
         const isInViewport = sweet.x > -100 && sweet.x < window.innerWidth + 100;
         

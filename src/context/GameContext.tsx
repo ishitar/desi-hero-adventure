@@ -185,8 +185,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCharacter(prev => ({ 
         ...prev, 
         jumping: true,
-        y: prev.y - 150
+        y: prev.y - 200
       }));
+      
+      const jumpDuration = 500;
+      const steps = 5;
+      const stepTime = jumpDuration / steps;
+      
+      for (let i = 1; i < steps; i++) {
+        setTimeout(() => {
+          if (gameState === 'playing') {
+            const progress = i / steps;
+            const jumpHeight = -200 * 4 * progress * (1 - progress);
+            
+            setCharacter(prev => ({
+              ...prev,
+              y: jumpHeight
+            }));
+          }
+        }, stepTime * i);
+      }
       
       setTimeout(() => {
         setCharacter(prev => ({ 
@@ -194,7 +212,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           jumping: false,
           y: 0
         }));
-      }, 500);
+      }, jumpDuration);
     }
   }, [gameState, character.jumping]);
 
