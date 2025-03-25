@@ -5,7 +5,7 @@ import { Map, Gem } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const TreasureMap: React.FC = () => {
-  const { character, targetLocation, worldPosition, showTreasureModal, setShowTreasureModal } = useGame();
+  const { character, targetLocation, worldPosition, showTreasureModal, setShowTreasureModal, gameOver } = useGame();
   const { toast } = useToast();
   
   // Calculate relative position in the map
@@ -27,8 +27,13 @@ const TreasureMap: React.FC = () => {
         title: "Treasure Found!",
         description: "You've reached the treasure! Claim your TOI Plus membership.",
       });
+      
+      // Trigger game over state after a delay to allow user to see the modal
+      setTimeout(() => {
+        gameOver();
+      }, 1000);
     }
-  }, [worldPosition, targetLocation, showTreasureModal, setShowTreasureModal, toast]);
+  }, [worldPosition, targetLocation, showTreasureModal, setShowTreasureModal, toast, gameOver]);
   
   return (
     <div className="fixed top-4 right-4 w-36 h-20 bg-amber-100/80 rounded-lg border-2 border-amber-800 shadow-md p-2">

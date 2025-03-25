@@ -83,10 +83,7 @@ const Character: React.FC = () => {
             </div>
           )}
           
-          {/* Beard */}
-          <div className="absolute w-14 h-10 bg-black rounded-b-xl bottom-[-8px] left-1/2 -translate-x-1/2"></div>
-          
-          {/* Sikh Turban (Pagri) with detailed folds */}
+          {/* Turban (Pagri) with detailed folds */}
           <div className="absolute w-26 h-12 bg-blue-600 rounded-t-full -top-10 left-1/2 -translate-x-1/2"></div>
           
           {/* Layered turban with folds */}

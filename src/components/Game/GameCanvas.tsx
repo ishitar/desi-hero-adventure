@@ -71,6 +71,33 @@ const GameCanvas: React.FC = () => {
 
   return (
     <div className="game-container" ref={canvasRef}>
+      <style jsx global>{`
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0px); }
+        }
+        
+        .animate-floating-sweet {
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        .shadow-glow {
+          filter: drop-shadow(0 0 5px rgba(255, 255, 200, 0.7));
+        }
+        
+        .character-glow {
+          box-shadow: 0 0 15px 10px rgba(255, 215, 0, 0.7);
+          animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+          0% { box-shadow: 0 0 15px 10px rgba(255, 215, 0, 0.7); }
+          50% { box-shadow: 0 0 25px 15px rgba(255, 215, 0, 0.9); }
+          100% { box-shadow: 0 0 15px 10px rgba(255, 215, 0, 0.7); }
+        }
+      `}</style>
+      
       <div className="game-canvas">
         <EnhancedSky />
         <Background />
