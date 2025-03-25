@@ -74,9 +74,9 @@ const GameCanvas: React.FC = () => {
     <div className="game-container" ref={canvasRef}>
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-          100% { transform: translateY(0px); }
+          0% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(180deg); }
+          100% { transform: translateY(0px) rotate(360deg); }
         }
         
         .animate-floating-sweet {
@@ -105,6 +105,16 @@ const GameCanvas: React.FC = () => {
         
         .animate-spin-slow {
           animation: spin-slow 10s linear infinite;
+        }
+        
+        @keyframes character-jump {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(-100px); }
+          100% { transform: translateY(0); }
+        }
+        
+        .animate-character-jump {
+          animation: character-jump 0.5s ease-out;
         }
       `}} />
       

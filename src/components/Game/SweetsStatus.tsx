@@ -56,12 +56,17 @@ const SweetsStatus: React.FC = () => {
       {Object.entries(sweetCounts).map(([type, count]) => (
         <div 
           key={type}
-          className="flex items-center gap-2 bg-white/20 backdrop-blur-md py-1 px-3 rounded-full 
-                    border border-white/30 shadow-lg animate-fade-in"
+          className={`flex items-center gap-2 bg-white/20 backdrop-blur-md py-1 px-3 rounded-full 
+                    border border-white/30 shadow-lg animate-fade-in
+                    ${count.collected > 0 ? 'bg-gradient-to-r from-white/30 to-yellow-300/30' : ''}`}
         >
           <div className="relative">
             {getSweetIcon(type)}
-            <div className={`absolute -top-1 -right-1 w-3 h-3 ${count.collected > 0 ? 'bg-green-500' : 'bg-gray-400'} rounded-full border border-white`}></div>
+            <div className={`absolute -top-1 -right-1 w-3 h-3 
+                            ${count.collected > 0 ? 'bg-green-500' : 'bg-gray-400'} 
+                            rounded-full border border-white flex items-center justify-center text-[6px] text-white font-bold`}>
+              {count.collected}
+            </div>
           </div>
           <span className="text-xs font-semibold text-game-navy">
             {count.collected}/{count.total} {type.charAt(0).toUpperCase() + type.slice(1)}

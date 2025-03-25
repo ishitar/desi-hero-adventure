@@ -57,6 +57,7 @@ interface GameContextProps {
   moveRight: () => void;
   moveForward: () => void;
   stopMoving: () => void;
+  collectSweet: (id: string) => void;
   targetLocation?: {x: number, y: number};
   worldPosition: React.MutableRefObject<number>;
   showTreasureModal: boolean;
@@ -224,6 +225,33 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCharacter(prev => ({ ...prev, running: false }));
     }
   }, [gameState]);
+
+  const collectSweet = useCallback((id: string) => {
+    setSweets(prev => prev.map(sweet => {
+      if (sweet.id === id) {
+        return { ...sweet, collected: true };
+      }
+      return sweet;
+    }));
+
+    setSweetCounts(prev => {
+      const updatedCounts = { ...prev };
+      
+      const collectedSweet = sweets.find(s => s.id === id);
+      if (collectedSweet && updatedCounts[collectedSweet.type]) {
+        updatedCounts[collectedSweet.type].collected += 1;
+      }
+      
+      return updatedCounts;
+    });
+    
+    setScore(prev => prev + 25);
+    setCharacter(prev => ({ ...prev, glowing: true }));
+    
+    setTimeout(() => {
+      setCharacter(prev => ({ ...prev, glowing: false }));
+    }, 1000);
+  }, [sweets]);
 
   const initializeGameObjects = useCallback(() => {
     const newObstacles: GameObject[] = Array(5).fill(null).map((_, i) => ({
@@ -593,19 +621,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const newX = sweet.x - worldSpeed.current * 1.2;
         
         if (newX < -sweet.width) {
-          let newHeight;
-          if (Math.random() < 0.3) {
-            newHeight = 50 + Math.random() * 50;
-          } else if (Math.random() < 0.7) {
-            newHeight = 100 + Math.random() * 80;
-          } else {
-            newHeight = 180 + Math.random() * 70;
-          }
+          const jumpHeightOptions = [80, 100, 120, 150, 180, 200];
+          const randomJumpHeight = jumpHeightOptions[Math.floor(Math.random() * jumpHeightOptions.length)];
           
           return {
             ...sweet,
             x: window.innerWidth + Math.random() * 300,
-            y: newHeight,
+            y: randomJumpHeight,
           };
         }
         
@@ -775,7 +797,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setScore(prev => prev + 0.1);
   }, [gameState, character, obstacles, treasures, gameOver, sweets]);
-  
+
   useEffect(() => {
     return () => {
       if (gameLoopId) {
@@ -808,6 +830,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         moveRight,
         moveForward,
         stopMoving,
+        collectSweet,
         targetLocation,
         worldPosition,
         showTreasureModal,

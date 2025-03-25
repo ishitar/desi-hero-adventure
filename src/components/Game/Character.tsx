@@ -7,6 +7,7 @@ const Character: React.FC = () => {
   const [expression, setExpression] = useState('normal');
   const [animationFrame, setAnimationFrame] = useState(0);
   const [glowing, setGlowing] = useState(false);
+  const [showJumpHint, setShowJumpHint] = useState(true);
   
   // Auto-run the character forward
   useEffect(() => {
@@ -21,12 +22,21 @@ const Character: React.FC = () => {
   useEffect(() => {
     if (character.jumping) {
       setExpression('excited');
+      setShowJumpHint(false);
       
       const resetExpression = setTimeout(() => {
         setExpression('normal');
       }, 500);
       
-      return () => clearInterval(resetExpression);
+      // Show the jump hint again after some time
+      const showHintAgain = setTimeout(() => {
+        setShowJumpHint(true);
+      }, 5000);
+      
+      return () => {
+        clearTimeout(resetExpression);
+        clearTimeout(showHintAgain);
+      };
     }
   }, [character.jumping]);
   
@@ -53,6 +63,15 @@ const Character: React.FC = () => {
       return () => clearTimeout(resetGlow);
     }
   }, [character.glowing]);
+  
+  // Periodically show and hide the jump hint
+  useEffect(() => {
+    const toggleHint = setInterval(() => {
+      setShowJumpHint(prev => !prev);
+    }, 7000);
+    
+    return () => clearInterval(toggleHint);
+  }, []);
   
   // Character styling based on state
   const characterClasses = `character absolute ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''} ${glowing ? 'character-glow' : ''}`;
@@ -143,10 +162,13 @@ const Character: React.FC = () => {
       </div>
       
       {/* Jump hint indicator - appears periodically to encourage jumping */}
-      {!character.jumping && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-6 bg-white/40 rounded-full flex items-center justify-center">
-            <span className="text-xs font-bold">↑</span>
+      {showJumpHint && !character.jumping && (
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 animate-bounce text-center">
+          <div className="w-10 h-10 bg-white/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+            <div className="w-6 h-6 text-game-navy flex flex-col items-center justify-center">
+              <span className="text-sm font-bold">↑</span>
+              <span className="text-[8px] font-bold">JUMP</span>
+            </div>
           </div>
         </div>
       )}

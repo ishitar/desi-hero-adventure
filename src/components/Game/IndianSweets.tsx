@@ -3,17 +3,37 @@ import React, { useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const IndianSweets: React.FC = () => {
-  const { sweets } = useGame();
+  const { sweets, character, collectSweet, worldPosition } = useGame();
 
-  // Use useEffect to check for sweet collection
+  // Check for collision with character
   useEffect(() => {
-    // This is handled in GameContext now
-  }, []);
+    const checkCollisions = () => {
+      sweets.forEach(sweet => {
+        if (!sweet.collected && 
+            character.x < sweet.x + sweet.width &&
+            character.x + character.width > sweet.x &&
+            character.y < sweet.y + sweet.height &&
+            character.y + character.height > sweet.y) {
+          collectSweet(sweet.id);
+        }
+      });
+    };
+
+    // Check for collisions on each animation frame
+    const animationId = requestAnimationFrame(checkCollisions);
+    return () => cancelAnimationFrame(animationId);
+  }, [character, sweets, collectSweet]);
 
   return (
     <div className="sweets-container">
       {sweets.map(sweet => {
         if (sweet.collected) return null;
+        
+        // Calculate a dynamic y position that makes sweets appear only when character jumps
+        const sweetY = sweet.y;
+        const isInViewport = sweet.x > -100 && sweet.x < window.innerWidth + 100;
+        
+        if (!isInViewport) return null;
         
         return (
           <div
@@ -22,7 +42,7 @@ const IndianSweets: React.FC = () => {
             style={{
               position: 'absolute',
               left: `${sweet.x}px`,
-              top: `${sweet.y}px`,
+              top: `${sweetY}px`,
               width: `${sweet.width}px`,
               height: `${sweet.height}px`,
               zIndex: 5,
