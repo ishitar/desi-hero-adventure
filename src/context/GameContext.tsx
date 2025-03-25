@@ -182,10 +182,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const jump = useCallback(() => {
     if (gameState === 'playing' && !character.jumping) {
-      setCharacter(prev => ({ ...prev, jumping: true }));
+      setCharacter(prev => ({ 
+        ...prev, 
+        jumping: true,
+        y: prev.y - 150
+      }));
       
       setTimeout(() => {
-        setCharacter(prev => ({ ...prev, jumping: false }));
+        setCharacter(prev => ({ 
+          ...prev, 
+          jumping: false,
+          y: 0
+        }));
       }, 500);
     }
   }, [gameState, character.jumping]);
@@ -228,7 +236,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const collectSweet = useCallback((id: string) => {
     setSweets(prev => prev.map(sweet => {
-      if (sweet.id === id) {
+      if (sweet.id === id && !sweet.collected) {
         return { ...sweet, collected: true };
       }
       return sweet;
@@ -238,7 +246,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updatedCounts = { ...prev };
       
       const collectedSweet = sweets.find(s => s.id === id);
-      if (collectedSweet && updatedCounts[collectedSweet.type]) {
+      if (collectedSweet && collectedSweet.collected === false && updatedCounts[collectedSweet.type]) {
         updatedCounts[collectedSweet.type].collected += 1;
       }
       

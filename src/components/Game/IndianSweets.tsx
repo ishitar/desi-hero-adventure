@@ -9,11 +9,35 @@ const IndianSweets: React.FC = () => {
   useEffect(() => {
     const checkCollisions = () => {
       sweets.forEach(sweet => {
-        if (!sweet.collected && 
-            character.x < sweet.x + sweet.width &&
-            character.x + character.width > sweet.x &&
-            character.y < sweet.y + sweet.height &&
-            character.y + character.height > sweet.y) {
+        // Skip already collected sweets
+        if (sweet.collected) return;
+        
+        // Improved collision detection that's more forgiving
+        const characterHitbox = {
+          left: character.x,
+          right: character.x + character.width,
+          top: character.y,
+          bottom: character.y + character.height
+        };
+        
+        const sweetHitbox = {
+          left: sweet.x,
+          right: sweet.x + sweet.width,
+          top: sweet.y,
+          bottom: sweet.y + sweet.height
+        };
+        
+        // More generous overlap check - even slight touches count
+        const horizontalOverlap = 
+          characterHitbox.right >= sweetHitbox.left && 
+          characterHitbox.left <= sweetHitbox.right;
+          
+        const verticalOverlap = 
+          characterHitbox.bottom >= sweetHitbox.top && 
+          characterHitbox.top <= sweetHitbox.bottom;
+        
+        // If there's any overlap at all, collect the sweet
+        if (horizontalOverlap && verticalOverlap) {
           collectSweet(sweet.id);
         }
       });

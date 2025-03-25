@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
@@ -75,7 +74,7 @@ const Character: React.FC = () => {
     return () => clearInterval(toggleHint);
   }, []);
   
-  // Character styling based on state
+  // Character styling based on state - update to reflect y position during jumps
   const characterClasses = `character absolute ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''} ${glowing ? 'character-glow' : ''}`;
   
   // Indian character representation with traditional attire
@@ -84,10 +83,11 @@ const Character: React.FC = () => {
       className={characterClasses}
       style={{
         left: `${character.x}px`,
-        bottom: '20%', // Position character on the ground
+        bottom: character.jumping ? '35%' : '20%', // Change position based on jumping state
         width: `${character.width}px`,
         height: `${character.height}px`,
-        zIndex: 10 // Ensure character is above background elements
+        zIndex: 10, // Ensure character is above background elements
+        transition: 'bottom 0.3s ease-out' // Smooth transition when jumping
       }}
     >
       <div className="w-full h-full relative">
