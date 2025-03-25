@@ -97,6 +97,15 @@ const GameCanvas: React.FC = () => {
           50% { box-shadow: 0 0 25px 15px rgba(255, 215, 0, 0.9); }
           100% { box-shadow: 0 0 15px 10px rgba(255, 215, 0, 0.7); }
         }
+        
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 10s linear infinite;
+        }
       `}} />
       
       <div className="game-canvas">

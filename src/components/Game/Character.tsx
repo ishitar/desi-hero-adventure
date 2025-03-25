@@ -41,6 +41,19 @@ const Character: React.FC = () => {
     }
   }, [character.running]);
   
+  // Handle glowing effect when collecting sweets
+  useEffect(() => {
+    if (character.glowing) {
+      setGlowing(true);
+      
+      const resetGlow = setTimeout(() => {
+        setGlowing(false);
+      }, 1000);
+      
+      return () => clearTimeout(resetGlow);
+    }
+  }, [character.glowing]);
+  
   // Character styling based on state
   const characterClasses = `character absolute ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''} ${glowing ? 'character-glow' : ''}`;
   
@@ -128,6 +141,15 @@ const Character: React.FC = () => {
           <div className={`absolute w-8 h-3 bg-amber-800 rounded-t-full right-3 bottom-[-3px] ${character.running ? (animationFrame < 3 ? 'opacity-70' : 'opacity-100') : ''}`}></div>
         </div>
       </div>
+      
+      {/* Jump hint indicator - appears periodically to encourage jumping */}
+      {!character.jumping && (
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-6 bg-white/40 rounded-full flex items-center justify-center">
+            <span className="text-xs font-bold">↑</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
