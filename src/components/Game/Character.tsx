@@ -18,7 +18,7 @@ const Character: React.FC = () => {
     return () => clearInterval(forwardInterval);
   }, [moveForward]);
   
-  // Handle expression changes during jumps
+  // Handle expression changes during jumps or eating
   useEffect(() => {
     if (character.jumping) {
       setExpression('excited');
@@ -40,6 +40,21 @@ const Character: React.FC = () => {
     }
   }, [character.jumping]);
   
+  // Handle glowing effect when collecting sweets
+  useEffect(() => {
+    if (character.glowing) {
+      setGlowing(true);
+      setExpression('eating');
+      
+      const resetGlow = setTimeout(() => {
+        setGlowing(false);
+        setExpression('normal');
+      }, 1000);
+      
+      return () => clearTimeout(resetGlow);
+    }
+  }, [character.glowing]);
+  
   // Animation frame counter for running animation
   useEffect(() => {
     if (character.running) {
@@ -50,19 +65,6 @@ const Character: React.FC = () => {
       return () => clearInterval(animInterval);
     }
   }, [character.running]);
-  
-  // Handle glowing effect when collecting sweets
-  useEffect(() => {
-    if (character.glowing) {
-      setGlowing(true);
-      
-      const resetGlow = setTimeout(() => {
-        setGlowing(false);
-      }, 1000);
-      
-      return () => clearTimeout(resetGlow);
-    }
-  }, [character.glowing]);
   
   // Periodically show and hide the jump hint
   useEffect(() => {
@@ -104,15 +106,24 @@ const Character: React.FC = () => {
           <div className="absolute w-4 h-1 bg-black rounded-full left-3.5 top-4 transform -rotate-12"></div>
           <div className="absolute w-4 h-1 bg-black rounded-full right-3.5 top-4 transform rotate-12"></div>
           
-          {/* Expression change based on jumping */}
+          {/* Expression change based on state */}
           {expression === 'normal' ? (
             /* Normal smile */
             <div className="absolute w-8 h-1 bg-black rounded-full left-1/2 -translate-x-1/2 top-12"></div>
-          ) : (
+          ) : expression === 'excited' ? (
             /* Excited open mouth */
             <div className="absolute w-8 h-4 bg-black rounded-full left-1/2 -translate-x-1/2 top-12 flex items-center justify-center">
               <div className="w-6 h-2 bg-red-500 rounded-full"></div>
             </div>
+          ) : expression === 'eating' ? (
+            /* Eating animation with chewing mouth */
+            <div className="absolute w-8 h-4 bg-black rounded-full left-1/2 -translate-x-1/2 top-12 flex items-center justify-center animate-pulse">
+              <div className="w-5 h-3 bg-red-600 rounded-full"></div>
+              <div className="absolute w-2 h-2 bg-yellow-300 rounded-full top-0 right-1 animate-bounce"></div>
+            </div>
+          ) : (
+            /* Default smile */
+            <div className="absolute w-8 h-1 bg-black rounded-full left-1/2 -translate-x-1/2 top-12"></div>
           )}
           
           {/* Turban (Pagri) with detailed folds */}
