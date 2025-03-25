@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
-// Character component representing an Indian character with traditional attire
 const Character: React.FC = () => {
   const { character, moveForward, jump } = useGame();
   const [expression, setExpression] = useState('normal');
@@ -42,7 +41,7 @@ const Character: React.FC = () => {
   }, [character.running]);
   
   // Character styling based on state
-  const characterClasses = `character ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''}`;
+  const characterClasses = `character absolute ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''}`;
   
   // Indian character representation with traditional attire
   return (
@@ -50,8 +49,10 @@ const Character: React.FC = () => {
       className={characterClasses}
       style={{
         left: `${character.x}px`,
+        bottom: '20%', // Position character on the ground
         width: `${character.width}px`,
         height: `${character.height}px`,
+        zIndex: 10 // Ensure character is above background elements
       }}
     >
       <div className="w-full h-full relative">

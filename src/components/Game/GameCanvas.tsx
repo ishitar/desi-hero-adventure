@@ -13,7 +13,6 @@ import IndianSweets from './IndianSweets';
 import SweetsStatus from './SweetsStatus';
 import Fireflies from './Fireflies';
 import FogEffect from './FogEffect';
-import Torches from './Torches';
 import AnimatedBanners from './AnimatedBanners';
 import EnhancedSky from './EnhancedSky';
 
@@ -77,7 +76,6 @@ const GameCanvas: React.FC = () => {
         <Background />
         <FogEffect />
         <AnimatedBanners />
-        <Torches />
         <Fireflies />
         <Character />
         <Obstacles />

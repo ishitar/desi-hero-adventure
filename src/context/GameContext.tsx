@@ -225,9 +225,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [gameState]);
 
   const initializeGameObjects = useCallback(() => {
-    const newObstacles: GameObject[] = Array(3).fill(null).map((_, i) => ({
+    // Create more frequent and varied obstacles
+    const newObstacles: GameObject[] = Array(5).fill(null).map((_, i) => ({
       id: `cow-${i}`,
-      x: window.innerWidth + (i * 600) + Math.random() * 300,
+      x: window.innerWidth + (i * 400) + Math.random() * 200,
       y: 0,
       width: 80,
       height: 60,
@@ -235,9 +236,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       speed: 2 + Math.random() * 2,
     }));
     
-    const snakes: GameObject[] = Array(3).fill(null).map((_, i) => ({
+    const snakes: GameObject[] = Array(5).fill(null).map((_, i) => ({
       id: `snake-${i}`,
-      x: window.innerWidth + (i * 400) + Math.random() * 200,
+      x: window.innerWidth + (i * 300) + Math.random() * 150,
       y: 0,
       width: 60,
       height: 30,
@@ -246,9 +247,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       direction: Math.random() > 0.5 ? 'left' as const : 'right' as const,
     }));
     
-    const tigers: GameObject[] = Array(2).fill(null).map((_, i) => ({
+    const tigers: GameObject[] = Array(3).fill(null).map((_, i) => ({
       id: `tiger-${i}`,
-      x: window.innerWidth + (i * 800) + Math.random() * 400,
+      x: window.innerWidth + (i * 600) + Math.random() * 300,
       y: 0,
       width: 90,
       height: 70,
@@ -256,50 +257,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       speed: 3 + Math.random() * 2,
     }));
     
-    const vultures: GameObject[] = Array(3).fill(null).map((_, i) => ({
-      id: `vulture-${i}`,
-      x: window.innerWidth + (i * 500) + Math.random() * 300,
-      y: 150 + Math.random() * 100,
-      width: 60,
-      height: 40,
-      type: 'vulture' as const,
-      speed: 2.5 + Math.random() * 1.5,
-      flightHeight: 150 + Math.random() * 100,
-    }));
-    
-    const insects: GameObject[] = Array(4).fill(null).map((_, i) => ({
-      id: `insect-${i}`,
-      x: window.innerWidth + (i * 300) + Math.random() * 200,
-      y: 30 + Math.random() * 50,
-      width: 20,
-      height: 15,
-      type: 'insect' as const,
-      speed: 3 + Math.random() * 2,
-    }));
-    
-    const beetles: GameObject[] = Array(3).fill(null).map((_, i) => ({
-      id: `beetle-${i}`,
-      x: window.innerWidth + (i * 400) + Math.random() * 300,
-      y: 10,
-      width: 25,
-      height: 20,
-      type: 'beetle' as const,
-      speed: 1.5 + Math.random() * 1.5,
-    }));
-    
-    const scorpions: GameObject[] = Array(2).fill(null).map((_, i) => ({
-      id: `scorpion-${i}`,
-      x: window.innerWidth + (i * 600) + Math.random() * 400,
-      y: 5,
-      width: 30,
-      height: 20,
-      type: 'scorpion' as const,
-      speed: 1 + Math.random() * 1,
-    }));
-    
-    const groundRocks: GameObject[] = Array(6).fill(null).map((_, i) => ({
+    const groundRocks: GameObject[] = Array(8).fill(null).map((_, i) => ({
       id: `rock-${i}`,
-      x: window.innerWidth + (i * 500) + Math.random() * 300,
+      x: window.innerWidth + (i * 350) + Math.random() * 200,
       y: 0,
       width: 40,
       height: 30,
@@ -307,9 +267,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       speed: 0,
     }));
     
-    const groundLogs: GameObject[] = Array(5).fill(null).map((_, i) => ({
+    const groundLogs: GameObject[] = Array(7).fill(null).map((_, i) => ({
       id: `log-${i}`,
-      x: window.innerWidth + (i * 600) + Math.random() * 400,
+      x: window.innerWidth + (i * 400) + Math.random() * 250,
       y: 0,
       width: 60,
       height: 20,
@@ -317,9 +277,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       speed: 0,
     }));
     
-    const groundFires: GameObject[] = Array(4).fill(null).map((_, i) => ({
+    const groundFires: GameObject[] = Array(6).fill(null).map((_, i) => ({
       id: `fire-${i}`,
-      x: window.innerWidth + (i * 700) + Math.random() * 500,
+      x: window.innerWidth + (i * 500) + Math.random() * 300,
       y: 0,
       width: 30,
       height: 40,
@@ -331,15 +291,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...newObstacles, 
       ...snakes, 
       ...tigers, 
-      ...vultures, 
-      ...insects, 
-      ...beetles, 
-      ...scorpions,
       ...groundRocks,
       ...groundLogs,
       ...groundFires
     ];
     
+    // Create treasures
     const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
     const newTreasures: GameObject[] = Array(15).fill(null).map((_, i) => {
       const type = treasureTypes[Math.floor(Math.random() * 3)] as 'coin' | 'gem' | 'chest';
@@ -357,7 +314,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return {
         id: `treasure-${i}`,
         x: window.innerWidth + (i * 400) + Math.random() * 300,
-        y: 150 + Math.random() * 150,
+        y: 150 + Math.random() * 150, // Make them appear higher
         width,
         height,
         type,
@@ -367,29 +324,28 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setTotalTreasures(newTreasures.length);
     
-    // Create Indian sweets with improved positioning
+    // Create Indian sweets with improved positioning - MORE OF THEM AT VARYING HEIGHTS
     const sweetTypes: Array<'dhokla' | 'mithai' | 'vadapav' | 'jalebi' | 'ladoo'> = 
       ['dhokla', 'mithai', 'vadapav', 'jalebi', 'ladoo'];
     
     const newSweets: GameObject[] = [];
     
-    // Create 5 of each sweet type with better height distribution
+    // Create 10 of each sweet type with better height distribution
     sweetTypes.forEach(type => {
-      const sweetsOfType = Array(8).fill(null).map((_, i) => {
-        // Ensure most sweets are higher in the air requiring jumps
-        // Distribute heights: 20% low, 50% medium, 30% high
+      const sweetsOfType = Array(10).fill(null).map((_, i) => {
+        // Distribution: 20% low, 50% medium, 30% high
         let heightLevel;
-        if (i < 2) { // 25% - low
+        if (i < 2) { // 20% - low
           heightLevel = 50 + Math.random() * 50; // Lower height
-        } else if (i < 6) { // 50% - medium
+        } else if (i < 7) { // 50% - medium
           heightLevel = 100 + Math.random() * 80; // Medium height
-        } else { // 25% - high
+        } else { // 30% - high
           heightLevel = 180 + Math.random() * 70; // Higher height
         }
         
         return {
           id: `${type}-${i}`,
-          x: window.innerWidth + (i * 300) + Math.random() * 500,
+          x: window.innerWidth + (i * 250) + Math.random() * 200, // More closely spaced
           y: heightLevel, // Varied heights
           width: 30,
           height: 30,
@@ -406,7 +362,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     sweetTypes.forEach(type => {
       initialSweetCounts[type] = {
         collected: 0,
-        total: 8 // Updated total sweets per type
+        total: 10 // Updated total sweets per type
       };
     });
     
@@ -502,12 +458,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateGameState = useCallback(() => {
     if (gameState !== 'playing') return;
     
+    // Update obstacles with faster movement
     setObstacles(prev => prev.map(obstacle => {
       let newX = obstacle.x;
       let newY = obstacle.y;
       
       if (obstacle.type.startsWith('ground-')) {
-        newX = obstacle.x - worldSpeed.current;
+        newX = obstacle.x - worldSpeed.current * 1.2; // Make ground obstacles move faster
       } else if (obstacle.type === 'vulture') {
         newX = obstacle.x - (obstacle.speed || worldSpeed.current);
         newY = (obstacle.flightHeight || 150) + Math.sin(newX / 100) * 30;
@@ -534,13 +491,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (obstacle.type.startsWith('ground-')) {
           return {
             ...obstacle,
-            x: window.innerWidth + Math.random() * 1000,
+            x: window.innerWidth + Math.random() * 500, // Spawn closer
             y: 0
           };
         } else if (isVultureType(obstacle.type)) {
           return {
             ...obstacle,
-            x: window.innerWidth + Math.random() * 500,
+            x: window.innerWidth + Math.random() * 300, // Spawn closer
             y: 150 + Math.random() * 100,
             speed: getEnemySpeed(obstacle.type),
             flightHeight: 150 + Math.random() * 100,
@@ -549,7 +506,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const newY = isAerialObstacle(obstacle.type) ? (150 + Math.random() * 100) : 0;
           return {
             ...obstacle,
-            x: window.innerWidth + Math.random() * 500,
+            x: window.innerWidth + Math.random() * 300, // Spawn closer
             y: newY,
             speed: getEnemySpeed(obstacle.type),
           };
@@ -584,21 +541,22 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     
+    // Update treasures with faster respawn
     setTreasures(prev => {
       const updatedTreasures = prev.map(treasure => {
         if (treasure.collected) return treasure;
         
-        const newX = treasure.x - worldSpeed.current;
+        const newX = treasure.x - worldSpeed.current * 1.2; // Make treasures move faster
         
         if (newX < -treasure.width) {
           const distance = treasure.type === 'chest' 
-            ? window.innerWidth + Math.random() * 1000 + 500
-            : window.innerWidth + Math.random() * 500;
+            ? window.innerWidth + Math.random() * 500 + 200 // Spawn closer
+            : window.innerWidth + Math.random() * 300;
             
           return {
             ...treasure,
             x: distance,
-            y: 150 + Math.random() * 150,
+            y: 120 + Math.random() * 180, // More varied heights
           };
         }
         
@@ -608,6 +566,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       });
       
+      // Add more treasures when they get low
       if (updatedTreasures.filter(t => !t.collected).length < 5) {
         const treasureTypes: Array<'coin' | 'gem' | 'chest'> = ['coin', 'gem', 'chest'];
         const newTreasures = Array(3).fill(null).map((_, i) => {
@@ -625,8 +584,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           return {
             id: `treasure-${Date.now()}-${i}`,
-            x: window.innerWidth + (i * 400) + Math.random() * 300,
-            y: 150 + Math.random() * 150,
+            x: window.innerWidth + (i * 300) + Math.random() * 200, // Spawn closer
+            y: 120 + Math.random() * 180, // More varied heights
             width,
             height,
             type,
@@ -645,7 +604,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return prev.map(sweet => {
         if (sweet.collected) return sweet;
         
-        const newX = sweet.x - worldSpeed.current;
+        const newX = sweet.x - worldSpeed.current * 1.2; // Make sweets move faster
         
         if (newX < -sweet.width) {
           // When respawning, ensure height variation
@@ -660,7 +619,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           return {
             ...sweet,
-            x: window.innerWidth + Math.random() * 500,
+            x: window.innerWidth + Math.random() * 300, // Spawn closer
             y: newHeight, // Varied heights for respawns
           };
         }

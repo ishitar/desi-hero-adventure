@@ -42,7 +42,7 @@
   color: #888;
 }
 
-/* New animations */
+/* Animation keyframes */
 @keyframes smoke {
   0% {
     transform: translateY(0) scale(1);
@@ -63,6 +63,70 @@
     opacity: 0.3;
     transform: translateX(-50%) scale(1.1);
   }
+}
+
+@keyframes character-jump {
+  0% {
+    bottom: 20%;
+  }
+  50% {
+    bottom: 40%;
+  }
+  100% {
+    bottom: 20%;
+  }
+}
+
+@keyframes character-run {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes obstacle-move {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100vw);
+  }
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-character-jump {
+  animation: character-jump 0.5s ease-out;
+}
+
+.animate-character-run {
+  animation: character-run 0.5s infinite;
+}
+
+.animate-obstacle-move {
+  animation: obstacle-move 5s linear infinite;
+}
+
+.animate-floating {
+  animation: floating 3s ease-in-out infinite;
 }
 
 .shadow-glow {
