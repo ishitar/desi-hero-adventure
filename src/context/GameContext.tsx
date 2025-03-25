@@ -524,7 +524,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             x: window.innerWidth + Math.random() * 1000,
             y: 0
           };
-        } else if (obstacle.type === 'vulture') {
+        } else if (isVultureType(obstacle.type)) {
           return {
             ...obstacle,
             x: window.innerWidth + Math.random() * 500,
@@ -533,7 +533,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             flightHeight: 150 + Math.random() * 100,
           };
         } else {
-          const newY = isVultureType(obstacle.type) ? (150 + Math.random() * 100) : 0;
+          const newY = isAerialObstacle(obstacle.type) ? (150 + Math.random() * 100) : 0;
           return {
             ...obstacle,
             x: window.innerWidth + Math.random() * 500,
@@ -552,6 +552,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     function isVultureType(type: GameObject['type']): boolean {
       return type === 'vulture';
+    }
+    
+    function isAerialObstacle(type: GameObject['type']): boolean {
+      return type === 'vulture' || type === 'insect' || type === 'beetle';
     }
     
     function getEnemySpeed(type: GameObject['type']) {
