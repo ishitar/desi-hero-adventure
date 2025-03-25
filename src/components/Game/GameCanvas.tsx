@@ -11,6 +11,11 @@ import TreasureMap from './TreasureMap';
 import TreasureModal from './TreasureModal';
 import IndianSweets from './IndianSweets';
 import SweetsStatus from './SweetsStatus';
+import Fireflies from './Fireflies';
+import FogEffect from './FogEffect';
+import Torches from './Torches';
+import AnimatedBanners from './AnimatedBanners';
+import EnhancedSky from './EnhancedSky';
 
 const GameCanvas: React.FC = () => {
   const { 
@@ -68,7 +73,12 @@ const GameCanvas: React.FC = () => {
   return (
     <div className="game-container" ref={canvasRef}>
       <div className="game-canvas">
+        <EnhancedSky />
         <Background />
+        <FogEffect />
+        <AnimatedBanners />
+        <Torches />
+        <Fireflies />
         <Character />
         <Obstacles />
         <IndianSweets />
