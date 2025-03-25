@@ -15,6 +15,7 @@ import Fireflies from './Fireflies';
 import FogEffect from './FogEffect';
 import AnimatedBanners from './AnimatedBanners';
 import EnhancedSky from './EnhancedSky';
+import Torches from './Torches';
 
 const GameCanvas: React.FC = () => {
   const { 
@@ -71,7 +72,7 @@ const GameCanvas: React.FC = () => {
 
   return (
     <div className="game-container" ref={canvasRef}>
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes float {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
@@ -96,7 +97,7 @@ const GameCanvas: React.FC = () => {
           50% { box-shadow: 0 0 25px 15px rgba(255, 215, 0, 0.9); }
           100% { box-shadow: 0 0 15px 10px rgba(255, 215, 0, 0.7); }
         }
-      `}</style>
+      `}} />
       
       <div className="game-canvas">
         <EnhancedSky />
@@ -104,12 +105,10 @@ const GameCanvas: React.FC = () => {
         <FogEffect />
         <AnimatedBanners />
         <Fireflies />
+        <Torches />
         <IndianSweets />
         <Character />
         <Obstacles />
-        
-        {/* Ground */}
-        <div className="ground"></div>
       </div>
       
       <ScoreBoard />
