@@ -74,20 +74,24 @@ const Character: React.FC = () => {
     return () => clearInterval(toggleHint);
   }, []);
   
-  // Character styling based on state - update to reflect y position during jumps
+  // Improved character styling based on state
   const characterClasses = `character absolute ${character.jumping ? 'animate-character-jump' : character.running ? 'animate-character-run' : ''} ${glowing ? 'character-glow' : ''}`;
   
-  // Indian character representation with traditional attire
+  // Position calculation for smoother transition
+  const characterBottom = character.jumping ? 
+    `calc(35% + ${Math.abs(character.y)}px)` : // Dynamic position during jump 
+    '20%'; // Default position
+  
   return (
     <div 
       className={characterClasses}
       style={{
         left: `${character.x}px`,
-        bottom: character.jumping ? '35%' : '20%', // Change position based on jumping state
+        bottom: characterBottom, 
         width: `${character.width}px`,
         height: `${character.height}px`,
-        zIndex: 10, // Ensure character is above background elements
-        transition: 'bottom 0.3s ease-out' // Smooth transition when jumping
+        zIndex: 10,
+        transition: 'bottom 0.05s linear' // Faster transition for more responsive jumps
       }}
     >
       <div className="w-full h-full relative">

@@ -1,9 +1,21 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const IndianSweets: React.FC = () => {
   const { sweets, character, collectSweet, worldPosition } = useGame();
   const lastCharacterPos = useRef({ x: 0, y: 0 });
+  const [showHitboxes, setShowHitboxes] = useState(false);
+  
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'h') {
+        setShowHitboxes(prev => !prev);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   useEffect(() => {
     const checkCollisions = () => {
@@ -12,15 +24,23 @@ const IndianSweets: React.FC = () => {
       sweets.forEach(sweet => {
         if (sweet.collected) return;
         
-        const buffer = 15;
+        const baseBuffer = 20;
+        const characterBuffer = character.jumping ? baseBuffer * 1.5 : baseBuffer;
+        
         const characterHitbox = {
-          left: Math.min(lastCharacterPos.current.x, character.x) - buffer,
-          right: Math.max(lastCharacterPos.current.x, character.x) + character.width + buffer,
-          top: Math.min(lastCharacterPos.current.y, character.y) - buffer,
-          bottom: Math.max(lastCharacterPos.current.y, character.y) + character.height + buffer
+          left: Math.min(lastCharacterPos.current.x, character.x) - characterBuffer,
+          right: Math.max(lastCharacterPos.current.x, character.x) + character.width + characterBuffer,
+          top: Math.min(lastCharacterPos.current.y, character.y) - characterBuffer,
+          bottom: Math.max(lastCharacterPos.current.y, character.y) + character.height + characterBuffer
         };
         
-        const sweetBuffer = ['ladoo', 'jalebi'].includes(sweet.type) ? buffer * 1.5 : buffer;
+        let sweetBuffer = baseBuffer;
+        if (['ladoo', 'jalebi'].includes(sweet.type)) {
+          sweetBuffer *= 2;
+        } else if (sweet.type === 'vadapav') {
+          sweetBuffer *= 1.5;
+        }
+        
         const sweetHitbox = {
           left: sweet.x - sweetBuffer,
           right: sweet.x + sweet.width + sweetBuffer,
@@ -38,15 +58,23 @@ const IndianSweets: React.FC = () => {
         
         const isJumpingUp = character.jumping && lastCharacterPos.current.y > character.y;
         const extraVerticalCheck = isJumpingUp && 
-          Math.abs(characterHitbox.top - sweetHitbox.bottom) < buffer * 2;
+          Math.abs(characterHitbox.top - sweetHitbox.bottom) < baseBuffer * 3;
         
-        if ((horizontalOverlap && verticalOverlap) || (horizontalOverlap && extraVerticalCheck)) {
+        const isJumpingDown = character.jumping && lastCharacterPos.current.y < character.y;
+        const downwardCheck = isJumpingDown && 
+          Math.abs(characterHitbox.bottom - sweetHitbox.top) < baseBuffer * 2;
+        
+        if ((horizontalOverlap && verticalOverlap) || 
+            (horizontalOverlap && extraVerticalCheck) || 
+            (horizontalOverlap && downwardCheck)) {
           collectSweet(sweet.id);
           console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
         }
       });
       
       lastCharacterPos.current = currentPos;
+      
+      requestAnimationFrame(checkCollisions);
     };
 
     const animationId = requestAnimationFrame(checkCollisions);
@@ -56,69 +84,119 @@ const IndianSweets: React.FC = () => {
   return (
     <div className="sweets-container">
       {sweets.map(sweet => {
-        if (sweet.collected) return null;
+        if (sweet.collected) {
+          const [isVisible, setIsVisible] = useState(true);
+          
+          useEffect(() => {
+            const timer = setTimeout(() => {
+              setIsVisible(false);
+            }, 200);
+            
+            return () => clearTimeout(timer);
+          }, []);
+          
+          if (!isVisible) return null;
+        }
         
         const sweetY = sweet.y;
         const isInViewport = sweet.x > -100 && sweet.x < window.innerWidth + 100;
         
         if (!isInViewport) return null;
         
+        const sweetStyles: React.CSSProperties = {
+          position: 'absolute',
+          left: `${sweet.x}px`,
+          top: `${sweetY}px`,
+          width: `${sweet.width}px`,
+          height: `${sweet.height}px`,
+          zIndex: 5,
+          transform: `rotate(${Math.floor(Math.random() * 360)}deg)`
+        };
+        
+        let hitboxStyles: React.CSSProperties | undefined;
+        if (showHitboxes) {
+          const baseBuffer = 20;
+          let sweetBuffer = baseBuffer;
+          
+          if (['ladoo', 'jalebi'].includes(sweet.type)) {
+            sweetBuffer *= 2;
+          } else if (sweet.type === 'vadapav') {
+            sweetBuffer *= 1.5;
+          }
+          
+          hitboxStyles = {
+            position: 'absolute',
+            left: `${sweet.x - sweetBuffer}px`,
+            top: `${sweetY - sweetBuffer}px`,
+            width: `${sweet.width + (sweetBuffer * 2)}px`,
+            height: `${sweet.height + (sweetBuffer * 2)}px`,
+            border: '1px dashed rgba(255, 0, 0, 0.5)',
+            zIndex: 4
+          };
+        }
+        
         return (
-          <div
-            key={sweet.id}
-            className="sweet animate-floating-sweet shadow-glow"
-            style={{
-              position: 'absolute',
-              left: `${sweet.x}px`,
-              top: `${sweetY}px`,
-              width: `${sweet.width}px`,
-              height: `${sweet.height}px`,
-              zIndex: 5,
-              transform: `rotate(${Math.floor(Math.random() * 360)}deg)`
-            }}
-          >
-            {sweet.type === 'dhokla' && (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-full h-full bg-yellow-200 rounded-sm border-2 border-yellow-300 flex items-center justify-center shadow-lg animate-spin-slow">
-                  <div className="w-3/4 h-3/4 bg-yellow-100 rounded-sm"></div>
+          <React.Fragment key={sweet.id}>
+            {showHitboxes && hitboxStyles && <div style={hitboxStyles} />}
+            <div
+              className={`sweet animate-floating-sweet shadow-glow ${sweet.collected ? 'opacity-50' : ''}`}
+              style={sweetStyles}
+            >
+              {sweet.type === 'dhokla' && (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full bg-yellow-200 rounded-sm border-2 border-yellow-300 flex items-center justify-center shadow-lg animate-spin-slow">
+                    <div className="w-3/4 h-3/4 bg-yellow-100 rounded-sm"></div>
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            {sweet.type === 'mithai' && (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-full h-full bg-orange-400 rounded-md border-2 border-orange-500 flex items-center justify-center shadow-lg animate-spin-slow">
-                  <div className="w-2/3 h-2/3 bg-green-300 rounded-sm"></div>
+              )}
+              
+              {sweet.type === 'mithai' && (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full bg-orange-400 rounded-md border-2 border-orange-500 flex items-center justify-center shadow-lg animate-spin-slow">
+                    <div className="w-2/3 h-2/3 bg-green-300 rounded-sm"></div>
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            {sweet.type === 'vadapav' && (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-full h-full bg-yellow-600 rounded-full border-2 border-yellow-700 flex items-center justify-center shadow-lg animate-spin-slow">
-                  <div className="w-2/3 h-1/2 bg-amber-800 rounded-sm"></div>
+              )}
+              
+              {sweet.type === 'vadapav' && (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full bg-yellow-600 rounded-full border-2 border-yellow-700 flex items-center justify-center shadow-lg animate-spin-slow">
+                    <div className="w-2/3 h-1/2 bg-amber-800 rounded-sm"></div>
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            {sweet.type === 'jalebi' && (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-full h-full bg-yellow-500 rounded-full border-2 border-yellow-600 shadow-lg animate-spin-slow" style={{
-                  clipPath: 'spiral(circle at center)'
-                }}></div>
-              </div>
-            )}
-            
-            {sweet.type === 'ladoo' && (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-full h-full bg-orange-300 rounded-full border-2 border-orange-400 flex items-center justify-center shadow-lg animate-spin-slow">
-                  <div className="w-1/2 h-1/2 bg-orange-200 rounded-full"></div>
+              )}
+              
+              {sweet.type === 'jalebi' && (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full bg-yellow-500 rounded-full border-2 border-yellow-600 shadow-lg animate-spin-slow" style={{
+                    clipPath: 'spiral(circle at center)'
+                  }}></div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+              
+              {sweet.type === 'ladoo' && (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full bg-orange-300 rounded-full border-2 border-orange-400 flex items-center justify-center shadow-lg animate-spin-slow">
+                    <div className="w-1/2 h-1/2 bg-orange-200 rounded-full"></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </React.Fragment>
         );
       })}
+      
+      {showHitboxes && (
+        <div style={{
+          position: 'absolute',
+          left: `${character.x - 20}px`,
+          bottom: character.jumping ? '35%' : '20%',
+          width: `${character.width + 40}px`,
+          height: `${character.height + 40}px`,
+          border: '1px dashed rgba(0, 255, 0, 0.5)',
+          zIndex: 4
+        }} />
+      )}
     </div>
   );
 };

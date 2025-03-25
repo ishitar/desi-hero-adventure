@@ -189,7 +189,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }));
       
       const jumpDuration = 500;
-      const steps = 5;
+      const steps = 12;
       const stepTime = jumpDuration / steps;
       
       for (let i = 1; i < steps; i++) {
