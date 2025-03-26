@@ -98,7 +98,7 @@ export const createGameUpdater = (
       const updatedTreasures = prev.map(treasure => {
         if (treasure.collected) return treasure;
         
-        const newX = treasure.x - worldSpeed.current * 1.2;
+        const newX = treasure.x - worldSpeed.current;
         
         if (newX < -treasure.width) {
           const distance = treasure.type === 'chest' 
@@ -156,8 +156,7 @@ export const createGameUpdater = (
       const updatedSweets = prev.map(sweet => {
         if (sweet.collected) return sweet;
         
-        const parallaxFactor = 0.9;
-        const newX = sweet.x - worldSpeed.current * parallaxFactor;
+        const newX = sweet.x - worldSpeed.current;
         
         if (newX < -sweet.width) {
           const jumpHeightOptions = [80, 100, 120, 150, 180, 200];

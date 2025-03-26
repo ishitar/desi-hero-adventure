@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
@@ -17,9 +16,8 @@ const IndianSweets: React.FC = () => {
       
       // Filter sweets that are within the visible area with some buffer
       const updatedVisibleSweets = sweets.filter(sweet => {
-        // Use a consistent parallax factor for sweet movement
-        const parallaxFactor = 0.9;
-        const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
+        // Remove parallax factor, use direct position
+        const adjustedX = sweet.x - worldPosition.current;
         
         // Only render sweets that are close to the visible area
         return adjustedX > -100 && adjustedX < screenWidth + 100;
@@ -55,9 +53,8 @@ const IndianSweets: React.FC = () => {
       sweets.forEach(sweet => {
         if (sweet.collected || collectedSweets[sweet.id]) return;
         
-        // Use a consistent parallax factor for collision detection
-        const parallaxFactor = 0.9;
-        const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
+        // Remove parallax factor, use direct position
+        const adjustedX = sweet.x - worldPosition.current;
         
         const baseBuffer = 30; 
         const characterBuffer = character.jumping ? baseBuffer * 2 : baseBuffer;
@@ -140,7 +137,7 @@ const IndianSweets: React.FC = () => {
               className="sweet animate-scale-out" 
               style={{
                 position: 'absolute',
-                left: `${sweet.x - (worldPosition.current * 0.9)}px`,
+                left: `${sweet.x - worldPosition.current}px`,
                 top: `${sweet.y}px`,
                 width: `${sweet.width}px`,
                 height: `${sweet.height}px`,
@@ -157,9 +154,8 @@ const IndianSweets: React.FC = () => {
           );
         }
         
-        // Use a consistent parallax factor
-        const parallaxFactor = 0.9;
-        const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
+        // Remove parallax factor, use direct position
+        const adjustedX = sweet.x - worldPosition.current;
         const sweetY = sweet.y;
         
         const sweetStyles: React.CSSProperties = {
