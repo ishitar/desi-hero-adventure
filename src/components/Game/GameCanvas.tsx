@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import Character from './Character';
@@ -15,7 +16,6 @@ import FogEffect from './FogEffect';
 import AnimatedBanners from './AnimatedBanners';
 import EnhancedSky from './EnhancedSky';
 import Torches from './Torches';
-import BuildingLogos from './BuildingLogos';
 
 const GameCanvas: React.FC = () => {
   const { 
@@ -27,6 +27,7 @@ const GameCanvas: React.FC = () => {
   } = useGame();
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  // Handle keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return;
@@ -125,7 +126,6 @@ const GameCanvas: React.FC = () => {
         <Fireflies />
         <Torches />
         <IndianSweets />
-        <BuildingLogos />
         <Character />
         <Obstacles />
       </div>
