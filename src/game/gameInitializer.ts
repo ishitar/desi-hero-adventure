@@ -102,21 +102,26 @@ export const initializeGameObjects = () => {
   
   const newSweets: GameObject[] = [];
   
+  // Create sweets with better distribution
   sweetTypes.forEach(type => {
     const sweetsOfType = Array(10).fill(null).map((_, i) => {
-      let heightLevel;
-      if (i < 2) {
-        heightLevel = 50 + Math.random() * 50;
-      } else if (i < 7) {
-        heightLevel = 100 + Math.random() * 80;
+      // Distribute sweets along different x coordinates with greater spacing
+      const xPosition = window.innerWidth + (i * 250) + Math.random() * 200;
+      
+      // Create three height tiers for sweets
+      let yPosition;
+      if (i % 3 === 0) {
+        yPosition = 80 + Math.random() * 40; // Lower tier
+      } else if (i % 3 === 1) {
+        yPosition = 150 + Math.random() * 40; // Middle tier
       } else {
-        heightLevel = 180 + Math.random() * 70;
+        yPosition = 220 + Math.random() * 40; // Upper tier
       }
       
       return {
         id: `${type}-${i}`,
-        x: window.innerWidth + (i * 250) + Math.random() * 200,
-        y: heightLevel,
+        x: xPosition,
+        y: yPosition,
         width: 30,
         height: 30,
         type,

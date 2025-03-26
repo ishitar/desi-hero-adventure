@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
@@ -14,10 +15,13 @@ const IndianSweets: React.FC = () => {
     const updateVisibleSweets = () => {
       const screenWidth = window.innerWidth;
       
+      // Filter sweets that are within the visible area with some buffer
       const updatedVisibleSweets = sweets.filter(sweet => {
-        const parallaxFactor = 0.8 + (Math.random() * 0.4);
+        // Use a consistent parallax factor for sweet movement
+        const parallaxFactor = 0.9;
         const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
         
+        // Only render sweets that are close to the visible area
         return adjustedX > -100 && adjustedX < screenWidth + 100;
       });
       
@@ -51,7 +55,8 @@ const IndianSweets: React.FC = () => {
       sweets.forEach(sweet => {
         if (sweet.collected || collectedSweets[sweet.id]) return;
         
-        const parallaxFactor = 0.8 + (Math.random() * 0.4);
+        // Use a consistent parallax factor for collision detection
+        const parallaxFactor = 0.9;
         const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
         
         const baseBuffer = 30; 
@@ -152,7 +157,8 @@ const IndianSweets: React.FC = () => {
           );
         }
         
-        const parallaxFactor = 0.8 + (Math.random() * 0.4);
+        // Use a consistent parallax factor
+        const parallaxFactor = 0.9;
         const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
         const sweetY = sweet.y;
         

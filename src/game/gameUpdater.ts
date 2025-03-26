@@ -1,4 +1,3 @@
-
 import { Character, GameObject, GameState, SweetCounts } from "@/types/gameTypes";
 
 export const createGameUpdater = (
@@ -154,10 +153,11 @@ export const createGameUpdater = (
   
   const updateSweets = () => {
     setSweets(prev => {
-      return prev.map(sweet => {
+      const updatedSweets = prev.map(sweet => {
         if (sweet.collected) return sweet;
         
-        const newX = sweet.x - worldSpeed.current * 1.2;
+        const parallaxFactor = 0.9;
+        const newX = sweet.x - worldSpeed.current * parallaxFactor;
         
         if (newX < -sweet.width) {
           const jumpHeightOptions = [80, 100, 120, 150, 180, 200];
@@ -175,6 +175,8 @@ export const createGameUpdater = (
           x: newX,
         };
       });
+      
+      return updatedSweets;
     });
   };
   
