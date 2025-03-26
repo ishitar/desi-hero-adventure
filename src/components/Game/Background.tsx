@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 
@@ -544,3 +545,10 @@ const Background: React.FC = () => {
         <div className="absolute bottom-0 left-[60%] w-3 h-8">
           <div className="w-3 h-3 bg-yellow-800 rounded-full"></div>
           <div className="w-1 h-5 bg-yellow-700 absolute top-2 left-1"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Background;
