@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameOver';
@@ -64,8 +65,10 @@ interface GameContextProps {
   setShowTreasureModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Creating a context with a default undefined value
 const GameContext = createContext<GameContextProps | undefined>(undefined);
 
+// Custom hook to consume the GameContext
 export const useGame = () => {
   const context = useContext(GameContext);
   if (!context) {
@@ -75,6 +78,7 @@ export const useGame = () => {
 };
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // State declarations
   const [gameState, setGameState] = useState<GameState>('idle');
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
@@ -836,37 +840,38 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [gameLoopId]);
 
+  // Create context value object that contains all the state and methods
+  const contextValue: GameContextProps = {
+    gameState,
+    score,
+    highScore,
+    treasuresCollected,
+    totalTreasures,
+    character,
+    obstacles,
+    treasures,
+    decorations,
+    sweets,
+    sweetCounts,
+    startGame,
+    pauseGame,
+    resumeGame,
+    gameOver,
+    restartGame,
+    jump,
+    moveLeft,
+    moveRight,
+    moveForward,
+    stopMoving,
+    collectSweet,
+    targetLocation,
+    worldPosition,
+    showTreasureModal,
+    setShowTreasureModal,
+  };
+
   return (
-    <GameContext.Provider
-      value={{
-        gameState,
-        score,
-        highScore,
-        treasuresCollected,
-        totalTreasures,
-        character,
-        obstacles,
-        treasures,
-        decorations,
-        sweets,
-        sweetCounts,
-        startGame,
-        pauseGame,
-        resumeGame,
-        gameOver,
-        restartGame,
-        jump,
-        moveLeft,
-        moveRight,
-        moveForward,
-        stopMoving,
-        collectSweet,
-        targetLocation,
-        worldPosition,
-        showTreasureModal,
-        setShowTreasureModal,
-      }}
-    >
+    <GameContext.Provider value={contextValue}>
       {children}
     </GameContext.Provider>
   );
