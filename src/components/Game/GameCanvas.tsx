@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import Character from './Character';
@@ -28,7 +27,6 @@ const GameCanvas: React.FC = () => {
   } = useGame();
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Handle keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState !== 'playing') return;
