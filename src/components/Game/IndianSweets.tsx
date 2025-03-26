@@ -1,13 +1,15 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
-import { Apple, Smartphone, Computer } from 'lucide-react';
 
 const IndianSweets: React.FC = () => {
   const { sweets, character, collectSweet, worldPosition, decorations } = useGame();
   const lastCharacterPos = useRef({ x: 0, y: 0 });
   const [showHitboxes, setShowHitboxes] = useState(false);
   const [collectedSweets, setCollectedSweets] = useState<{[id: string]: boolean}>({});
+  // Track if character is eating to reset glow effect
+  const [isEating, setIsEating] = useState(false);
+  const eatingTimeoutRef = useRef<number | null>(null);
   
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -17,7 +19,13 @@ const IndianSweets: React.FC = () => {
     };
     
     window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+      // Clean up timeout on component unmount
+      if (eatingTimeoutRef.current) {
+        window.clearTimeout(eatingTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Tech company logos for buildings
@@ -29,22 +37,22 @@ const IndianSweets: React.FC = () => {
           return null;
         }
 
-        let LogoComponent;
+        let logoSrc;
         let logoPosition;
         const baseLogoSize = 24;
         
         switch(index % 3) {
           case 0:
-            LogoComponent = <Apple className="text-white/70" size={baseLogoSize} />;
+            logoSrc = '/apple-logo.png';
             break;
           case 1:
-            LogoComponent = <Computer className="text-white/70" size={baseLogoSize} />;
+            logoSrc = '/microsoft-logo.png';
             break;
           case 2:
-            LogoComponent = <Smartphone className="text-white/70" size={baseLogoSize} />;
+            logoSrc = '/samsung-logo.png';
             break;
           default:
-            LogoComponent = <Apple className="text-white/70" size={baseLogoSize} />;
+            logoSrc = '/apple-logo.png';
         }
         
         const yOffset = building.type === 'google-temple' || building.type === 'adobe-temple' ? 
@@ -58,8 +66,8 @@ const IndianSweets: React.FC = () => {
         
         return (
           <div key={`logo-${building.id}`} className="absolute" style={logoPosition}>
-            <div className="bg-black/30 p-1 rounded-full backdrop-blur-sm">
-              {LogoComponent}
+            <div className="bg-black/30 p-1 rounded-full backdrop-blur-sm flex items-center justify-center" style={{ width: `${baseLogoSize}px`, height: `${baseLogoSize}px` }}>
+              <img src={logoSrc} alt="Company Logo" className="w-full h-full object-contain" />
             </div>
           </div>
         );
@@ -120,6 +128,19 @@ const IndianSweets: React.FC = () => {
             setCollectedSweets(prev => ({...prev, [sweet.id]: true}));
             collectSweet(sweet.id);
             console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
+            
+            // Set eating state and clear any existing timeout
+            setIsEating(true);
+            if (eatingTimeoutRef.current) {
+              window.clearTimeout(eatingTimeoutRef.current);
+            }
+            
+            // Reset eating state after 1.5 seconds
+            const timeoutId = window.setTimeout(() => {
+              setIsEating(false);
+            }, 1500);
+            
+            eatingTimeoutRef.current = timeoutId;
           }
         }
       });
