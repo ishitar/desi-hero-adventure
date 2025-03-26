@@ -27,11 +27,12 @@ const Background: React.FC = () => {
       cows: 1.1,
       fruitSellers: 1.0,
       religiousStructures: 0.85, // New scrolling speed for religious buildings
-      techLogos: 0.65 // Similar to clouds
+      techLogos: 0.6  // Set to same speed as clouds - independent of character movement
     };
     
     let animationFrameId: number;
     let scrollPos = 0;
+    let techLogoPos = 0; // Separate position tracking for tech logos
     
     const animateBackground = () => {
       if (gameState !== 'playing') {
@@ -40,6 +41,7 @@ const Background: React.FC = () => {
       }
       
       scrollPos += 3; // increased from 2 for even faster movement
+      techLogoPos += 3; // Constant speed for tech logos, independent of character
       
       // Move mountains (slow)
       if (mountainsRef.current) {
@@ -81,9 +83,9 @@ const Background: React.FC = () => {
         fruitSellersRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.fruitSellers}px)`;
       }
       
-      // Move tech logos (similar to clouds)
+      // Move tech logos with constant speed, independent of character
       if (techLogosRef.current) {
-        techLogosRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.techLogos}px)`;
+        techLogosRef.current.style.transform = `translateX(-${techLogoPos * scrollSpeed.techLogos}px)`;
       }
       
       // Move clouds (variable)
