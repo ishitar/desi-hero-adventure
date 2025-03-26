@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { GameProvider } from '@/context/GameContext';
 import GameCanvas from '@/components/Game/GameCanvas';
 

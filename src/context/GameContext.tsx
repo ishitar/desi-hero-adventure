@@ -6,8 +6,10 @@ import { createCharacterControls } from '@/game/characterControls';
 import { createGameUpdater } from '@/game/gameUpdater';
 import { createSweetCollector } from '@/game/sweetCollector';
 
+// Create the context with a default undefined value
 const GameContext = createContext<GameContextProps | undefined>(undefined);
 
+// Export the hook with proper error handling
 export const useGame = () => {
   const context = useContext(GameContext);
   if (!context) {
@@ -181,37 +183,38 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [gameLoopId]);
 
+  // Create the context value object explicitly with all required properties
+  const contextValue: GameContextProps = {
+    gameState,
+    score,
+    highScore,
+    treasuresCollected,
+    totalTreasures,
+    character,
+    obstacles,
+    treasures,
+    decorations,
+    sweets,
+    sweetCounts,
+    startGame,
+    pauseGame,
+    resumeGame,
+    gameOver,
+    restartGame,
+    jump,
+    moveLeft,
+    moveRight,
+    moveForward,
+    stopMoving,
+    collectSweet,
+    targetLocation,
+    worldPosition,
+    showTreasureModal,
+    setShowTreasureModal,
+  };
+
   return (
-    <GameContext.Provider
-      value={{
-        gameState,
-        score,
-        highScore,
-        treasuresCollected,
-        totalTreasures,
-        character,
-        obstacles,
-        treasures,
-        decorations,
-        sweets,
-        sweetCounts,
-        startGame,
-        pauseGame,
-        resumeGame,
-        gameOver,
-        restartGame,
-        jump,
-        moveLeft,
-        moveRight,
-        moveForward,
-        stopMoving,
-        collectSweet,
-        targetLocation,
-        worldPosition,
-        showTreasureModal,
-        setShowTreasureModal,
-      }}
-    >
+    <GameContext.Provider value={contextValue}>
       {children}
     </GameContext.Provider>
   );
