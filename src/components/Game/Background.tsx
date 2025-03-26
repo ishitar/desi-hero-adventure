@@ -32,7 +32,6 @@ const Background: React.FC = () => {
     
     let animationFrameId: number;
     let scrollPos = 0;
-    let techLogoPos = 0; // Separate position tracking for tech logos
     
     const animateBackground = () => {
       if (gameState !== 'playing') {
@@ -41,7 +40,6 @@ const Background: React.FC = () => {
       }
       
       scrollPos += 3; // increased from 2 for even faster movement
-      techLogoPos += 3; // Constant speed for tech logos, independent of character
       
       // Move mountains (slow)
       if (mountainsRef.current) {
@@ -83,11 +81,6 @@ const Background: React.FC = () => {
         fruitSellersRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.fruitSellers}px)`;
       }
       
-      // Move tech logos with constant speed, independent of character
-      if (techLogosRef.current) {
-        techLogosRef.current.style.transform = `translateX(-${techLogoPos * scrollSpeed.techLogos}px)`;
-      }
-      
       // Move clouds (variable)
       cloudsRef.current.forEach((cloud, index) => {
         const cloudSpeed = scrollSpeed.clouds * (0.8 + (index * 0.1));
@@ -103,6 +96,30 @@ const Background: React.FC = () => {
       cancelAnimationFrame(animationFrameId);
     };
   }, [gameState]);
+
+  // Create a separate effect for tech logos that runs completely independent of game state
+  useEffect(() => {
+    const techLogoSpeed = 0.6; // Same speed as clouds
+    let techLogoPos = 0;
+    let animationFrameId: number;
+    
+    const animateTechLogos = () => {
+      techLogoPos += 3; // Constant speed
+      
+      // Move tech logos continuously regardless of game state
+      if (techLogosRef.current) {
+        techLogosRef.current.style.transform = `translateX(-${techLogoPos * techLogoSpeed}px)`;
+      }
+      
+      animationFrameId = requestAnimationFrame(animateTechLogos);
+    };
+    
+    animateTechLogos();
+    
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []); // Empty dependency array - runs once and continues independently
 
   // Render tech company logos in clouds
   const renderFlyingTechLogos = () => {
