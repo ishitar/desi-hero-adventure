@@ -5,6 +5,7 @@ const IndianSweets: React.FC = () => {
   const { sweets, character, collectSweet, worldPosition } = useGame();
   const lastCharacterPos = useRef({ x: 0, y: 0 });
   const [showHitboxes, setShowHitboxes] = useState(false);
+  const [collectedSweets, setCollectedSweets] = useState<{[id: string]: boolean}>({});
   
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -22,10 +23,10 @@ const IndianSweets: React.FC = () => {
       const currentPos = { x: character.x, y: character.y };
       
       sweets.forEach(sweet => {
-        if (sweet.collected) return;
+        if (sweet.collected || collectedSweets[sweet.id]) return;
         
-        const baseBuffer = 20;
-        const characterBuffer = character.jumping ? baseBuffer * 1.5 : baseBuffer;
+        const baseBuffer = 30; 
+        const characterBuffer = character.jumping ? baseBuffer * 2 : baseBuffer;
         
         const characterHitbox = {
           left: Math.min(lastCharacterPos.current.x, character.x) - characterBuffer,
@@ -34,11 +35,11 @@ const IndianSweets: React.FC = () => {
           bottom: Math.max(lastCharacterPos.current.y, character.y) + character.height + characterBuffer
         };
         
-        let sweetBuffer = baseBuffer;
+        let sweetBuffer = baseBuffer * 1.5;
         if (['ladoo', 'jalebi'].includes(sweet.type)) {
-          sweetBuffer *= 2;
+          sweetBuffer *= 2.5;
         } else if (sweet.type === 'vadapav') {
-          sweetBuffer *= 1.5;
+          sweetBuffer *= 2;
         }
         
         const sweetHitbox = {
@@ -58,15 +59,16 @@ const IndianSweets: React.FC = () => {
         
         const isJumpingUp = character.jumping && lastCharacterPos.current.y > character.y;
         const extraVerticalCheck = isJumpingUp && 
-          Math.abs(characterHitbox.top - sweetHitbox.bottom) < baseBuffer * 3;
+          Math.abs(characterHitbox.top - sweetHitbox.bottom) < baseBuffer * 4;
         
         const isJumpingDown = character.jumping && lastCharacterPos.current.y < character.y;
         const downwardCheck = isJumpingDown && 
-          Math.abs(characterHitbox.bottom - sweetHitbox.top) < baseBuffer * 2;
+          Math.abs(characterHitbox.bottom - sweetHitbox.top) < baseBuffer * 3;
         
         if ((horizontalOverlap && verticalOverlap) || 
             (horizontalOverlap && extraVerticalCheck) || 
             (horizontalOverlap && downwardCheck)) {
+          setCollectedSweets(prev => ({...prev, [sweet.id]: true}));
           collectSweet(sweet.id);
           console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
         }
@@ -85,17 +87,27 @@ const IndianSweets: React.FC = () => {
     <div className="sweets-container">
       {sweets.map(sweet => {
         if (sweet.collected) {
-          const [isVisible, setIsVisible] = useState(true);
-          
-          useEffect(() => {
-            const timer = setTimeout(() => {
-              setIsVisible(false);
-            }, 200);
-            
-            return () => clearTimeout(timer);
-          }, []);
-          
-          if (!isVisible) return null;
+          return (
+            <div 
+              key={sweet.id}
+              className="sweet animate-scale-out" 
+              style={{
+                position: 'absolute',
+                left: `${sweet.x}px`,
+                top: `${sweet.y}px`,
+                width: `${sweet.width}px`,
+                height: `${sweet.height}px`,
+                zIndex: 5,
+                opacity: 0.7,
+                transition: 'all 0.3s ease-out',
+                animation: 'scale-out 0.3s forwards'
+              }}
+            >
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full h-full bg-yellow-300 rounded-full animate-ping"></div>
+              </div>
+            </div>
+          );
         }
         
         const sweetY = sweet.y;
@@ -115,13 +127,13 @@ const IndianSweets: React.FC = () => {
         
         let hitboxStyles: React.CSSProperties | undefined;
         if (showHitboxes) {
-          const baseBuffer = 20;
-          let sweetBuffer = baseBuffer;
+          const baseBuffer = 30;
+          let sweetBuffer = baseBuffer * 1.5;
           
           if (['ladoo', 'jalebi'].includes(sweet.type)) {
-            sweetBuffer *= 2;
+            sweetBuffer *= 2.5;
           } else if (sweet.type === 'vadapav') {
-            sweetBuffer *= 1.5;
+            sweetBuffer *= 2;
           }
           
           hitboxStyles = {
@@ -189,10 +201,10 @@ const IndianSweets: React.FC = () => {
       {showHitboxes && (
         <div style={{
           position: 'absolute',
-          left: `${character.x - 20}px`,
+          left: `${character.x - 30}px`,
           bottom: character.jumping ? '35%' : '20%',
-          width: `${character.width + 40}px`,
-          height: `${character.height + 40}px`,
+          width: `${character.width + 60}px`,
+          height: `${character.height + 60}px`,
           border: '1px dashed rgba(0, 255, 0, 0.5)',
           zIndex: 4
         }} />

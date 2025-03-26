@@ -1,9 +1,8 @@
-
 import React, { useRef, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const Background: React.FC = () => {
-  const { gameState } = useGame();
+  const { gameState, decorations } = useGame();
   const mountainsRef = useRef<HTMLDivElement>(null);
   const cloudsRef = useRef<HTMLDivElement[]>([]);
   const treesRef = useRef<HTMLDivElement>(null);
@@ -12,6 +11,7 @@ const Background: React.FC = () => {
   const templesRef = useRef<HTMLDivElement>(null);
   const cowsRef = useRef<HTMLDivElement>(null);
   const fruitSellersRef = useRef<HTMLDivElement>(null);
+  const religiousStructuresRef = useRef<HTMLDivElement>(null);
   
   // Parallax scrolling effect with increased speed
   useEffect(() => {
@@ -23,7 +23,8 @@ const Background: React.FC = () => {
       people: 1.0,
       temples: 0.9,
       cows: 1.1,
-      fruitSellers: 1.0
+      fruitSellers: 1.0,
+      religiousStructures: 0.85 // New scrolling speed for religious buildings
     };
     
     let animationFrameId: number;
@@ -62,6 +63,11 @@ const Background: React.FC = () => {
         templesRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.temples}px)`;
       }
       
+      // Move religious structures (new)
+      if (religiousStructuresRef.current) {
+        religiousStructuresRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.religiousStructures}px)`;
+      }
+      
       // Move cows
       if (cowsRef.current) {
         cowsRef.current.style.transform = `translateX(-${scrollPos * scrollSpeed.cows}px)`;
@@ -88,6 +94,231 @@ const Background: React.FC = () => {
     };
   }, [gameState]);
 
+  // Render religious buildings from the decorations
+  const renderReligiousBuildings = () => {
+    const filteredDecorations = decorations.filter(d => 
+      ['temple', 'mosque', 'gurudwara', 'google-temple', 'adobe-temple'].includes(d.type)
+    );
+    
+    return filteredDecorations.map(decoration => {
+      if (decoration.type === 'temple') {
+        return (
+          <div
+            key={decoration.id}
+            className="temple absolute"
+            style={{
+              left: `${decoration.x}px`,
+              bottom: '0',
+              width: `${decoration.width}px`,
+              height: `${decoration.height}px`,
+            }}
+          >
+            <div className="w-full h-full relative">
+              {/* Temple base */}
+              <div className="absolute w-full h-2/3 bg-amber-200 rounded-lg bottom-0"></div>
+              
+              {/* Temple roof */}
+              <div className="absolute w-full h-1/3 bg-amber-800 top-0 left-0" style={{ 
+                clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+              }}>
+              </div>
+              
+              {/* Temple dome */}
+              <div className="absolute w-1/4 h-1/4 bg-game-saffron rounded-full -top-6 left-1/2 -translate-x-1/2"></div>
+              
+              {/* Temple entrance */}
+              <div className="absolute w-1/3 h-1/3 bg-amber-900 rounded-t-lg bottom-0 left-1/2 -translate-x-1/2"></div>
+              
+              {/* Temple windows */}
+              <div className="absolute w-1/6 h-1/6 bg-amber-100 rounded-full top-1/3 left-1/4"></div>
+              <div className="absolute w-1/6 h-1/6 bg-amber-100 rounded-full top-1/3 right-1/4"></div>
+            </div>
+          </div>
+        );
+      }
+      
+      if (decoration.type === 'google-temple') {
+        return (
+          <div
+            key={decoration.id}
+            className="temple absolute"
+            style={{
+              left: `${decoration.x}px`,
+              bottom: '0',
+              width: `${decoration.width}px`,
+              height: `${decoration.height}px`,
+            }}
+          >
+            <div className="w-full h-full relative">
+              {/* Temple base */}
+              <div className="absolute w-full h-2/3 bg-white rounded-lg bottom-0"></div>
+              
+              {/* Temple roof */}
+              <div className="absolute w-full h-1/3 bg-amber-800 top-0 left-0" style={{ 
+                clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+              }}>
+              </div>
+              
+              {/* Temple dome */}
+              <div className="absolute w-1/4 h-1/4 bg-game-saffron rounded-full -top-6 left-1/2 -translate-x-1/2"></div>
+              
+              {/* Temple entrance */}
+              <div className="absolute w-1/3 h-1/3 bg-amber-900 rounded-t-lg bottom-0 left-1/2 -translate-x-1/2"></div>
+              
+              {/* Google Logo on Temple */}
+              <div className="absolute w-3/4 h-1/4 flex items-center justify-center top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl">
+                {/* Letter G */}
+                <div className="h-full aspect-square bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                  <div className="h-3/4 aspect-square bg-white rounded-full flex items-center justify-center">
+                    <div className="h-1/2 w-1/2 bg-blue-500 absolute bottom-1.5 right-1.5"></div>
+                  </div>
+                </div>
+                {/* Letter o */}
+                <div className="h-full aspect-square bg-red-500 rounded-full flex items-center justify-center mr-1">
+                  <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                </div>
+                {/* Letter o */}
+                <div className="h-full aspect-square bg-yellow-500 rounded-full flex items-center justify-center mr-1">
+                  <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                </div>
+                {/* Letter g */}
+                <div className="h-full aspect-square bg-blue-500 rounded-full flex items-center justify-center mr-1">
+                  <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                </div>
+                {/* Letter l */}
+                <div className="h-full aspect-square bg-green-500 rounded-full flex items-center justify-center mr-1">
+                  <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                </div>
+                {/* Letter e */}
+                <div className="h-full aspect-square bg-red-500 rounded-full flex items-center justify-center">
+                  <div className="h-3/4 aspect-square bg-white rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      if (decoration.type === 'adobe-temple') {
+        return (
+          <div
+            key={decoration.id}
+            className="temple absolute"
+            style={{
+              left: `${decoration.x}px`,
+              bottom: '0',
+              width: `${decoration.width}px`,
+              height: `${decoration.height}px`,
+            }}
+          >
+            <div className="w-full h-full relative">
+              {/* Temple base */}
+              <div className="absolute w-full h-2/3 bg-gray-100 rounded-lg bottom-0"></div>
+              
+              {/* Temple roof */}
+              <div className="absolute w-full h-1/3 bg-amber-800 top-0 left-0" style={{ 
+                clipPath: 'polygon(0 100%, 50% 0, 100% 100%)' 
+              }}>
+              </div>
+              
+              {/* Temple dome */}
+              <div className="absolute w-1/4 h-1/4 bg-game-saffron rounded-full -top-6 left-1/2 -translate-x-1/2"></div>
+              
+              {/* Temple entrance */}
+              <div className="absolute w-1/3 h-1/3 bg-amber-900 rounded-t-lg bottom-0 left-1/2 -translate-x-1/2"></div>
+              
+              {/* Adobe Logo on Temple */}
+              <div className="absolute w-2/3 h-1/4 flex items-center justify-center top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg">
+                <div className="h-full aspect-square bg-red-600 flex items-center justify-center text-white font-bold">
+                  A
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      if (decoration.type === 'mosque') {
+        return (
+          <div
+            key={decoration.id}
+            className="mosque absolute"
+            style={{
+              left: `${decoration.x}px`,
+              bottom: '0',
+              width: `${decoration.width}px`,
+              height: `${decoration.height}px`,
+            }}
+          >
+            <div className="w-full h-full relative">
+              {/* Mosque base */}
+              <div className="absolute w-full h-2/3 bg-white rounded-lg bottom-0"></div>
+              
+              {/* Mosque dome */}
+              <div className="absolute w-1/2 h-1/4 bg-green-600 rounded-t-full top-0 left-1/4"></div>
+              
+              {/* Mosque minarets */}
+              <div className="absolute w-1/8 h-1/2 bg-white rounded-t-lg bottom-1/3 left-0"></div>
+              <div className="absolute w-1/8 h-1/2 bg-white rounded-t-lg bottom-1/3 right-0"></div>
+              
+              {/* Minaret tops */}
+              <div className="absolute w-3 h-3 bg-green-600 rounded-full -top-1 left-1/12"></div>
+              <div className="absolute w-3 h-3 bg-green-600 rounded-full -top-1 right-1/12"></div>
+              
+              {/* Mosque entrance */}
+              <div className="absolute w-1/4 h-1/4 bg-green-700 rounded-t-lg bottom-0 left-3/8"></div>
+              
+              {/* Mosque windows */}
+              <div className="absolute w-1/6 h-1/6 bg-sky-100 rounded-t-full top-1/3 left-1/4"></div>
+              <div className="absolute w-1/6 h-1/6 bg-sky-100 rounded-t-full top-1/3 right-1/4"></div>
+            </div>
+          </div>
+        );
+      }
+      
+      if (decoration.type === 'gurudwara') {
+        return (
+          <div
+            key={decoration.id}
+            className="gurudwara absolute"
+            style={{
+              left: `${decoration.x}px`,
+              bottom: '0',
+              width: `${decoration.width}px`,
+              height: `${decoration.height}px`,
+            }}
+          >
+            <div className="w-full h-full relative">
+              {/* Gurudwara base */}
+              <div className="absolute w-full h-3/4 bg-white rounded-lg bottom-0"></div>
+              
+              {/* Gurudwara dome - onion shape */}
+              <div className="absolute w-2/5 h-1/4 bg-yellow-500 rounded-t-full top-0 left-1/3"></div>
+              <div className="absolute w-1/10 h-1/10 bg-yellow-500 top-[-10px] left-1/2 -translate-x-1/2"></div>
+              
+              {/* Gurudwara spire */}
+              <div className="absolute w-1 h-1/6 bg-yellow-600 top-[-25px] left-1/2 -translate-x-1/2"></div>
+              
+              {/* Gurudwara entrance */}
+              <div className="absolute w-1/3 h-1/3 bg-amber-100 rounded-t-lg bottom-0 left-1/3"></div>
+              
+              {/* Side small domes */}
+              <div className="absolute w-1/5 h-1/6 bg-yellow-500 rounded-t-full top-1/10 left-1/8"></div>
+              <div className="absolute w-1/5 h-1/6 bg-yellow-500 rounded-t-full top-1/10 right-1/8"></div>
+              
+              {/* Flags */}
+              <div className="absolute w-1/20 h-1/5 bg-white left-1/8 top-0">
+                <div className="absolute w-full h-1/4 bg-blue-600 top-0"></div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      return null;
+    });
+  };
+
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       {/* Sky gradient is handled by the game-canvas class */}
@@ -104,9 +335,11 @@ const Background: React.FC = () => {
         }}></div>
       </div>
       
-      {/* Religious buildings - temples, mosques, gurudwaras */}
-      <div ref={templesRef} className="absolute bottom-[20%] w-[300%] h-[18%]">
-        {/* Hindu Temple */}
+      {/* Religious buildings - temples, mosques, gurudwaras - Now using the game's decoration data */}
+      <div ref={religiousStructuresRef} className="absolute bottom-[20%] w-[300%] h-[18%]">
+        {renderReligiousBuildings()}
+        
+        {/* Add some default religious buildings for the background */}
         <div className="absolute bottom-0 left-[10%] w-24 h-36">
           <div className="absolute bottom-0 w-full h-2/3 bg-amber-200"></div>
           <div className="absolute top-0 w-full h-1/3 bg-amber-700" style={{ 
@@ -311,103 +544,3 @@ const Background: React.FC = () => {
         <div className="absolute bottom-0 left-[60%] w-3 h-8">
           <div className="w-3 h-3 bg-yellow-800 rounded-full"></div>
           <div className="w-1 h-5 bg-yellow-700 absolute top-2 left-1"></div>
-        </div>
-        
-        <div className="absolute bottom-0 left-[80%] w-3 h-10">
-          <div className="w-3 h-3 bg-teal-800 rounded-full"></div>
-          <div className="w-1 h-7 bg-teal-700 absolute top-2 left-1"></div>
-        </div>
-        
-        {/* Second set for seamless scrolling */}
-        <div className="absolute bottom-0 left-[115%] w-3 h-8">
-          <div className="w-3 h-3 bg-blue-800 rounded-full"></div>
-          <div className="w-1 h-5 bg-blue-700 absolute top-2 left-1"></div>
-        </div>
-        
-        <div className="absolute bottom-0 left-[130%] w-3 h-8">
-          <div className="w-3 h-3 bg-red-800 rounded-full"></div>
-          <div className="w-1 h-5 bg-red-700 absolute top-2 left-1"></div>
-        </div>
-        
-        <div className="absolute bottom-0 left-[150%] w-3 h-8">
-          <div className="w-3 h-3 bg-green-800 rounded-full"></div>
-          <div className="w-1 h-5 bg-green-700 absolute top-2 left-1"></div>
-        </div>
-        
-        <div className="absolute bottom-0 left-[170%] w-3 h-8">
-          <div className="w-3 h-3 bg-purple-800 rounded-full"></div>
-          <div className="w-1 h-5 bg-purple-700 absolute top-2 left-1"></div>
-        </div>
-      </div>
-      
-      {/* Background trees - move at medium speed */}
-      <div ref={treesRef} className="absolute bottom-[20%] w-[200%] h-[15%]">
-        <div className="absolute bottom-0 left-[5%] w-8 h-16 bg-green-600 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[8%] w-6 h-12 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[12%] w-8 h-14 bg-green-600 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[25%] w-10 h-20 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[28%] w-8 h-16 bg-green-800 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[45%] w-8 h-16 bg-green-600 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[48%] w-6 h-12 bg-green-700 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[65%] w-12 h-24 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[69%] w-8 h-18 bg-green-800 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[85%] w-8 h-16 bg-green-600 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[88%] w-6 h-12 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[92%] w-8 h-14 bg-green-600 rounded-t-full"></div>
-        
-        {/* Second set of trees (for seamless scrolling) */}
-        <div className="absolute bottom-0 left-[105%] w-8 h-16 bg-green-600 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[108%] w-6 h-12 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[112%] w-8 h-14 bg-green-600 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[125%] w-10 h-20 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[128%] w-8 h-16 bg-green-800 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[145%] w-8 h-16 bg-green-600 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[148%] w-6 h-12 bg-green-700 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[165%] w-12 h-24 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[169%] w-8 h-18 bg-green-800 rounded-t-full"></div>
-        
-        <div className="absolute bottom-0 left-[185%] w-8 h-16 bg-green-600 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[188%] w-6 h-12 bg-green-700 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-[192%] w-8 h-14 bg-green-600 rounded-t-full"></div>
-      </div>
-      
-      {/* Clouds - move at slow speed */}
-      <div 
-        ref={el => el && (cloudsRef.current[0] = el)} 
-        className="absolute left-[10%] top-[15%] w-20 h-10 bg-white/70 rounded-full"
-      ></div>
-      <div 
-        ref={el => el && (cloudsRef.current[1] = el)} 
-        className="absolute left-[30%] top-[10%] w-24 h-12 bg-white/70 rounded-full"
-      ></div>
-      <div 
-        ref={el => el && (cloudsRef.current[2] = el)} 
-        className="absolute left-[60%] top-[20%] w-20 h-8 bg-white/70 rounded-full"
-      ></div>
-      <div 
-        ref={el => el && (cloudsRef.current[3] = el)} 
-        className="absolute left-[80%] top-[15%] w-16 h-8 bg-white/70 rounded-full"
-      ></div>
-      <div 
-        ref={el => el && (cloudsRef.current[4] = el)} 
-        className="absolute left-[110%] top-[12%] w-22 h-10 bg-white/70 rounded-full"
-      ></div>
-      <div 
-        ref={el => el && (cloudsRef.current[5] = el)} 
-        className="absolute left-[140%] top-[18%] w-18 h-9 bg-white/70 rounded-full"
-      ></div>
-      
-      {/* Sun */}
-      <div className="absolute right-[10%] top-[10%] w-16 h-16 bg-game-yellow rounded-full animate-pulse-gentle"></div>
-    </div>
-  );
-};
-
-export default Background;
