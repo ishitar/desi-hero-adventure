@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
-import { Apple, Microsoft, Smartphone } from 'lucide-react';
+import { Apple, Smartphone, Computer } from 'lucide-react';
 
 const IndianSweets: React.FC = () => {
   const { sweets, character, collectSweet, worldPosition, decorations } = useGame();
@@ -38,7 +38,7 @@ const IndianSweets: React.FC = () => {
             LogoComponent = <Apple className="text-white/70" size={baseLogoSize} />;
             break;
           case 1:
-            LogoComponent = <Microsoft className="text-white/70" size={baseLogoSize} />;
+            LogoComponent = <Computer className="text-white/70" size={baseLogoSize} />;
             break;
           case 2:
             LogoComponent = <Smartphone className="text-white/70" size={baseLogoSize} />;
