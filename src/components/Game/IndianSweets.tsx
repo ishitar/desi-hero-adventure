@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
 const IndianSweets: React.FC = () => {
-  const { sweets, character, collectSweet, worldPosition, decorations, sweetCounts } = useGame();
+  const { sweets, character, collectSweet, worldPosition } = useGame();
   const lastCharacterPos = useRef({ x: 0, y: 0 });
   const [showHitboxes, setShowHitboxes] = useState(false);
   const [collectedSweets, setCollectedSweets] = useState<{[id: string]: boolean}>({});
@@ -111,11 +111,6 @@ const IndianSweets: React.FC = () => {
   return (
     <div className="sweets-container">
       {sweets.map(sweet => {
-        // Skip rendering sweet if count for this type is already at maximum
-        if (sweetCounts[sweet.type] && sweetCounts[sweet.type].collected >= sweetCounts[sweet.type].total) {
-          return null;
-        }
-        
         if (sweet.collected) {
           return (
             <div 
