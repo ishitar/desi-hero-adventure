@@ -265,7 +265,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const collectedSweet = sweets.find(s => s.id === id);
       if (collectedSweet && collectedSweet.collected === false && updatedCounts[collectedSweet.type]) {
-        updatedCounts[collectedSweet.type].collected += 1;
+        const currentCount = updatedCounts[collectedSweet.type].collected;
+        const maxCount = updatedCounts[collectedSweet.type].total;
+        updatedCounts[collectedSweet.type].collected = Math.min(currentCount + 1, maxCount);
       }
       
       return updatedCounts;
@@ -767,7 +769,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (sweetCollisions.length > 0) {
       setSweets(prev => prev.map(sweet => {
-        if (sweetCollisions.some(s => s.id === sweet.id)) {
+        if (sweetCollisions.some(s => s.id === sweet.id) && !sweet.collected) {
           return { ...sweet, collected: true };
         }
         return sweet;
@@ -777,8 +779,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const newCounts = { ...prev };
         
         sweetCollisions.forEach(sweet => {
-          if (newCounts[sweet.type]) {
-            newCounts[sweet.type].collected += 1;
+          if (newCounts[sweet.type] && !sweet.collected) {
+            const currentCount = newCounts[sweet.type].collected;
+            const maxCount = newCounts[sweet.type].total;
+            newCounts[sweet.type].collected = Math.min(currentCount + 1, maxCount);
           }
         });
         

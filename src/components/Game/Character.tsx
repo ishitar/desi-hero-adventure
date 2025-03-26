@@ -91,7 +91,7 @@ const Character: React.FC = () => {
         width: `${character.width}px`,
         height: `${character.height}px`,
         zIndex: 10,
-        transition: 'bottom 0.05s linear' // Faster transition for more responsive jumps
+        transition: 'bottom 0.05s linear'
       }}
     >
       <div className="w-full h-full relative">

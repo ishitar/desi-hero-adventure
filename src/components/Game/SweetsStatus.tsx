@@ -65,11 +65,11 @@ const SweetsStatus: React.FC = () => {
             <div className={`absolute -top-1 -right-1 w-3 h-3 
                             ${count.collected > 0 ? 'bg-green-500' : 'bg-gray-400'} 
                             rounded-full border border-white flex items-center justify-center text-[6px] text-white font-bold`}>
-              {count.collected}
+              {Math.min(count.collected, count.total)}
             </div>
           </div>
           <span className="text-xs font-semibold text-game-navy">
-            {count.collected}/{count.total} {type.charAt(0).toUpperCase() + type.slice(1)}
+            {Math.min(count.collected, count.total)}/{count.total} {type.charAt(0).toUpperCase() + type.slice(1)}
           </span>
         </div>
       ))}

@@ -1,8 +1,10 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
+import { Apple, Microsoft, Smartphone } from 'lucide-react';
 
 const IndianSweets: React.FC = () => {
-  const { sweets, character, collectSweet, worldPosition } = useGame();
+  const { sweets, character, collectSweet, worldPosition, decorations } = useGame();
   const lastCharacterPos = useRef({ x: 0, y: 0 });
   const [showHitboxes, setShowHitboxes] = useState(false);
   const [collectedSweets, setCollectedSweets] = useState<{[id: string]: boolean}>({});
@@ -17,6 +19,52 @@ const IndianSweets: React.FC = () => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
+
+  // Tech company logos for buildings
+  const renderBuildingLogos = () => {
+    return decorations
+      .filter(d => ['temple', 'mosque', 'gurudwara', 'google-temple', 'adobe-temple'].includes(d.type))
+      .map((building, index) => {
+        if (!building.x || building.x < -building.width || building.x > window.innerWidth + 100) {
+          return null;
+        }
+
+        let LogoComponent;
+        let logoPosition;
+        const baseLogoSize = 24;
+        
+        switch(index % 3) {
+          case 0:
+            LogoComponent = <Apple className="text-white/70" size={baseLogoSize} />;
+            break;
+          case 1:
+            LogoComponent = <Microsoft className="text-white/70" size={baseLogoSize} />;
+            break;
+          case 2:
+            LogoComponent = <Smartphone className="text-white/70" size={baseLogoSize} />;
+            break;
+          default:
+            LogoComponent = <Apple className="text-white/70" size={baseLogoSize} />;
+        }
+        
+        const yOffset = building.type === 'google-temple' || building.type === 'adobe-temple' ? 
+          building.height * 0.7 : building.height * 0.5;
+        
+        logoPosition = {
+          left: `${building.x + (building.width / 2) - (baseLogoSize / 2)}px`,
+          top: `${building.y + yOffset}px`,
+          zIndex: 7
+        };
+        
+        return (
+          <div key={`logo-${building.id}`} className="absolute" style={logoPosition}>
+            <div className="bg-black/30 p-1 rounded-full backdrop-blur-sm">
+              {LogoComponent}
+            </div>
+          </div>
+        );
+      });
+  };
 
   useEffect(() => {
     const checkCollisions = () => {
@@ -68,9 +116,11 @@ const IndianSweets: React.FC = () => {
         if ((horizontalOverlap && verticalOverlap) || 
             (horizontalOverlap && extraVerticalCheck) || 
             (horizontalOverlap && downwardCheck)) {
-          setCollectedSweets(prev => ({...prev, [sweet.id]: true}));
-          collectSweet(sweet.id);
-          console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
+          if (!sweet.collected) {
+            setCollectedSweets(prev => ({...prev, [sweet.id]: true}));
+            collectSweet(sweet.id);
+            console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
+          }
         }
       });
       
@@ -85,6 +135,8 @@ const IndianSweets: React.FC = () => {
 
   return (
     <div className="sweets-container">
+      {renderBuildingLogos()}
+      
       {sweets.map(sweet => {
         if (sweet.collected) {
           return (
