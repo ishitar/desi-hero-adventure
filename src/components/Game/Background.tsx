@@ -121,6 +121,23 @@ const Background: React.FC = () => {
     };
   }, []); // Empty dependency array - runs once and continues independently
 
+  // Add floating animation keyframes for tech logos
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes float-y {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(25px); }
+        100% { transform: translateY(-15px); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Render tech company logos in clouds
   const renderFlyingTechLogos = () => {
     // Create array of tech companies to display
@@ -482,7 +499,7 @@ const Background: React.FC = () => {
     <div className="absolute inset-0 z-0 overflow-hidden">
       {/* Sky gradient is handled by the game-canvas class */}
       
-      {/* Flying Tech Logos */}
+      {/* Flying Tech Logos - Now this is a completely independent layer */}
       {renderFlyingTechLogos()}
       
       {/* Mountains/Hills in the distance - now with scrolling */}
