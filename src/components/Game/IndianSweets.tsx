@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
@@ -7,9 +6,27 @@ const IndianSweets: React.FC = () => {
   const lastCharacterPos = useRef({ x: 0, y: 0 });
   const [showHitboxes, setShowHitboxes] = useState(false);
   const [collectedSweets, setCollectedSweets] = useState<{[id: string]: boolean}>({});
-  // Track if character is eating to reset glow effect
   const [isEating, setIsEating] = useState(false);
   const eatingTimeoutRef = useRef<number | null>(null);
+  const [visibleSweets, setVisibleSweets] = useState<typeof sweets>([]);
+  
+  useEffect(() => {
+    const updateVisibleSweets = () => {
+      const screenWidth = window.innerWidth;
+      
+      const updatedVisibleSweets = sweets.filter(sweet => {
+        const parallaxFactor = 0.8 + (Math.random() * 0.4);
+        const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
+        
+        return adjustedX > -100 && adjustedX < screenWidth + 100;
+      });
+      
+      setVisibleSweets(updatedVisibleSweets);
+    };
+    
+    const animationFrame = requestAnimationFrame(updateVisibleSweets);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [sweets, worldPosition]);
   
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -21,7 +38,6 @@ const IndianSweets: React.FC = () => {
     window.addEventListener('keydown', handleKeyPress);
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
-      // Clean up timeout on component unmount
       if (eatingTimeoutRef.current) {
         window.clearTimeout(eatingTimeoutRef.current);
       }
@@ -34,6 +50,9 @@ const IndianSweets: React.FC = () => {
       
       sweets.forEach(sweet => {
         if (sweet.collected || collectedSweets[sweet.id]) return;
+        
+        const parallaxFactor = 0.8 + (Math.random() * 0.4);
+        const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
         
         const baseBuffer = 30; 
         const characterBuffer = character.jumping ? baseBuffer * 2 : baseBuffer;
@@ -53,8 +72,8 @@ const IndianSweets: React.FC = () => {
         }
         
         const sweetHitbox = {
-          left: sweet.x - sweetBuffer,
-          right: sweet.x + sweet.width + sweetBuffer,
+          left: adjustedX - sweetBuffer,
+          right: adjustedX + sweet.width + sweetBuffer,
           top: sweet.y - sweetBuffer,
           bottom: sweet.y + sweet.height + sweetBuffer
         };
@@ -83,13 +102,11 @@ const IndianSweets: React.FC = () => {
             collectSweet(sweet.id);
             console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
             
-            // Set eating state and clear any existing timeout
             setIsEating(true);
             if (eatingTimeoutRef.current) {
               window.clearTimeout(eatingTimeoutRef.current);
             }
             
-            // Reset eating state after 1.5 seconds
             const timeoutId = window.setTimeout(() => {
               setIsEating(false);
             }, 1500);
@@ -106,11 +123,11 @@ const IndianSweets: React.FC = () => {
 
     const animationId = requestAnimationFrame(checkCollisions);
     return () => cancelAnimationFrame(animationId);
-  }, [character, sweets, collectSweet]);
+  }, [character, sweets, collectSweet, worldPosition]);
 
   return (
     <div className="sweets-container">
-      {sweets.map(sweet => {
+      {visibleSweets.map(sweet => {
         if (sweet.collected) {
           return (
             <div 
@@ -118,7 +135,7 @@ const IndianSweets: React.FC = () => {
               className="sweet animate-scale-out" 
               style={{
                 position: 'absolute',
-                left: `${sweet.x}px`,
+                left: `${sweet.x - (worldPosition.current * 0.9)}px`,
                 top: `${sweet.y}px`,
                 width: `${sweet.width}px`,
                 height: `${sweet.height}px`,
@@ -135,14 +152,13 @@ const IndianSweets: React.FC = () => {
           );
         }
         
+        const parallaxFactor = 0.8 + (Math.random() * 0.4);
+        const adjustedX = sweet.x - (worldPosition.current * parallaxFactor);
         const sweetY = sweet.y;
-        const isInViewport = sweet.x > -100 && sweet.x < window.innerWidth + 100;
-        
-        if (!isInViewport) return null;
         
         const sweetStyles: React.CSSProperties = {
           position: 'absolute',
-          left: `${sweet.x}px`,
+          left: `${adjustedX}px`,
           top: `${sweetY}px`,
           width: `${sweet.width}px`,
           height: `${sweet.height}px`,
@@ -163,7 +179,7 @@ const IndianSweets: React.FC = () => {
           
           hitboxStyles = {
             position: 'absolute',
-            left: `${sweet.x - sweetBuffer}px`,
+            left: `${adjustedX - sweetBuffer}px`,
             top: `${sweetY - sweetBuffer}px`,
             width: `${sweet.width + (sweetBuffer * 2)}px`,
             height: `${sweet.height + (sweetBuffer * 2)}px`,

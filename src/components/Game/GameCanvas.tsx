@@ -16,6 +16,7 @@ import FogEffect from './FogEffect';
 import AnimatedBanners from './AnimatedBanners';
 import EnhancedSky from './EnhancedSky';
 import Torches from './Torches';
+import BuildingLogos from './BuildingLogos';
 
 const GameCanvas: React.FC = () => {
   const { 
@@ -126,6 +127,7 @@ const GameCanvas: React.FC = () => {
         <Fireflies />
         <Torches />
         <IndianSweets />
+        <BuildingLogos />
         <Character />
         <Obstacles />
       </div>
