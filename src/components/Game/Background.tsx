@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { Apple } from 'lucide-react';
 
@@ -132,6 +131,16 @@ const Background: React.FC = () => {
         {/* Apple Logo */}
         <div className="absolute bottom-[45%] left-[42%] w-8 h-8 z-10 animate-float">
           <Apple size={24} color="#000000e6" strokeWidth={1} />
+        </div>
+        
+        {/* Microsoft Logo */}
+        <div className="absolute bottom-[55%] left-[60%] w-10 h-10 z-10 animate-float">
+          <div className="grid grid-cols-2 gap-0.5">
+            <div className="bg-black w-4 h-4"></div>
+            <div className="bg-black w-4 h-4"></div>
+            <div className="bg-black w-4 h-4"></div>
+            <div className="bg-black w-4 h-4"></div>
+          </div>
         </div>
         
         <div className="absolute bottom-0 left-[10%] w-24 h-36">
