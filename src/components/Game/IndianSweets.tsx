@@ -10,6 +10,8 @@ const IndianSweets: React.FC = () => {
   // Track if character is eating to reset glow effect
   const [isEating, setIsEating] = useState(false);
   const eatingTimeoutRef = useRef<number | null>(null);
+  // Track recently collected sweets to prevent duplicate collection events
+  const recentlyCollectedRef = useRef<Set<string>>(new Set());
   
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -33,7 +35,7 @@ const IndianSweets: React.FC = () => {
       const currentPos = { x: character.x, y: character.y };
       
       sweets.forEach(sweet => {
-        if (sweet.collected || collectedSweets[sweet.id]) return;
+        if (sweet.collected || collectedSweets[sweet.id] || recentlyCollectedRef.current.has(sweet.id)) return;
         
         const baseBuffer = 30; 
         const characterBuffer = character.jumping ? baseBuffer * 2 : baseBuffer;
@@ -79,7 +81,13 @@ const IndianSweets: React.FC = () => {
             (horizontalOverlap && extraVerticalCheck) || 
             (horizontalOverlap && downwardCheck)) {
           if (!sweet.collected) {
+            // Mark the sweet as collected locally
             setCollectedSweets(prev => ({...prev, [sweet.id]: true}));
+            
+            // Add to recently collected set to prevent duplicates
+            recentlyCollectedRef.current.add(sweet.id);
+            
+            // Collect sweet in the game context
             collectSweet(sweet.id);
             console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
             
@@ -89,10 +97,15 @@ const IndianSweets: React.FC = () => {
               window.clearTimeout(eatingTimeoutRef.current);
             }
             
-            // Reset eating state after 1.5 seconds
+            // Reset eating state after 2 seconds
             const timeoutId = window.setTimeout(() => {
               setIsEating(false);
-            }, 1500);
+              // After the eating animation completes, remove the sweet from recently collected
+              // This allows for a pause between collections
+              setTimeout(() => {
+                recentlyCollectedRef.current.delete(sweet.id);
+              }, 500);
+            }, 2000);
             
             eatingTimeoutRef.current = timeoutId;
           }

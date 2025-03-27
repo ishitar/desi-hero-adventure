@@ -274,7 +274,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     
     setScore(prev => prev + 25);
-    setCharacter(prev => ({ ...prev, glowing: true }));
+    
+    setCharacter(prev => {
+      if (!prev.glowing) {
+        return { ...prev, glowing: true };
+      }
+      return prev;
+    });
     
     setTimeout(() => {
       setCharacter(prev => ({ ...prev, glowing: false }));

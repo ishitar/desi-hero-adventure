@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 
@@ -7,6 +8,7 @@ const Character: React.FC = () => {
   const [animationFrame, setAnimationFrame] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [showJumpHint, setShowJumpHint] = useState(true);
+  const [isEating, setIsEating] = useState(false);
   
   // Auto-run the character forward
   useEffect(() => {
@@ -24,7 +26,9 @@ const Character: React.FC = () => {
       setShowJumpHint(false);
       
       const resetExpression = setTimeout(() => {
-        setExpression('normal');
+        if (!isEating) {
+          setExpression('normal');
+        }
       }, 500);
       
       // Show the jump hint again after some time
@@ -37,20 +41,29 @@ const Character: React.FC = () => {
         clearTimeout(showHintAgain);
       };
     }
-  }, [character.jumping]);
+  }, [character.jumping, isEating]);
   
   // Handle glowing effect when collecting sweets
   useEffect(() => {
-    if (character.glowing) {
+    if (character.glowing && !isEating) {
       setGlowing(true);
       setExpression('eating');
+      setIsEating(true);
       
+      // Ensure eating animation completes within 2 seconds
       const resetGlow = setTimeout(() => {
         setGlowing(false);
-        setExpression('normal');
       }, 1000);
       
-      return () => clearTimeout(resetGlow);
+      const completeEating = setTimeout(() => {
+        setExpression('normal');
+        setIsEating(false);
+      }, 2000);
+      
+      return () => {
+        clearTimeout(resetGlow);
+        clearTimeout(completeEating);
+      };
     }
   }, [character.glowing]);
   
