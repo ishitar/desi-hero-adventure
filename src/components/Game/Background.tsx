@@ -128,21 +128,6 @@ const Background: React.FC = () => {
       <div ref={religiousStructuresRef} className="absolute bottom-[20%] w-[300%] h-[18%]">
         {renderReligiousBuildings()}
         
-        {/* Apple Logo */}
-        <div className="absolute bottom-[45%] left-[42%] w-8 h-8 z-10 animate-float">
-          <Apple size={24} color="#000000e6" strokeWidth={1} />
-        </div>
-        
-        {/* Microsoft Logo */}
-        <div className="absolute bottom-[55%] left-[60%] w-10 h-10 z-10 animate-float">
-          <div className="grid grid-cols-2 gap-0.5">
-            <div className="bg-black w-4 h-4"></div>
-            <div className="bg-black w-4 h-4"></div>
-            <div className="bg-black w-4 h-4"></div>
-            <div className="bg-black w-4 h-4"></div>
-          </div>
-        </div>
-        
         <div className="absolute bottom-0 left-[10%] w-24 h-36">
           <div className="absolute bottom-0 w-full h-2/3 bg-amber-200"></div>
           <div className="absolute top-0 w-full h-1/3 bg-amber-700" style={{ 
@@ -150,6 +135,10 @@ const Background: React.FC = () => {
           }}></div>
           <div className="absolute w-8 h-8 bg-red-600 rounded-full -top-3 left-1/2 -translate-x-1/2"></div>
           <div className="absolute w-8 h-12 bg-amber-900 rounded-t-md bottom-0 left-1/2 -translate-x-1/2"></div>
+          
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 z-10">
+            <Apple size={24} color="#000000e6" strokeWidth={1} />
+          </div>
         </div>
         
         <div className="absolute bottom-0 left-[30%] w-28 h-32">
@@ -161,6 +150,15 @@ const Background: React.FC = () => {
           <div className="absolute -top-4 left-2 w-4 h-4 bg-green-600 rounded-full"></div>
           <div className="absolute w-6 h-8 bg-blue-200 rounded-t-md bottom-6 left-4"></div>
           <div className="absolute w-6 h-8 bg-blue-200 rounded-t-md bottom-6 right-4"></div>
+          
+          <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-10 h-10 z-10">
+            <div className="grid grid-cols-2 gap-0.5">
+              <div className="bg-black w-4 h-4"></div>
+              <div className="bg-black w-4 h-4"></div>
+              <div className="bg-black w-4 h-4"></div>
+              <div className="bg-black w-4 h-4"></div>
+            </div>
+          </div>
         </div>
         
         <div className="absolute bottom-0 left-[50%] w-30 h-38">
