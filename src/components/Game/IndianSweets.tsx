@@ -87,8 +87,8 @@ const IndianSweets: React.FC = () => {
             // Add to recently collected set to prevent duplicates
             recentlyCollectedRef.current.add(sweet.id);
             
-            // Collect sweet in the game context
-            collectSweet(sweet.id);
+            // Collect sweet in the game context - pass the actual sweet type!
+            collectSweet(sweet.id, sweet.type);
             console.log(`Collected ${sweet.type} at x:${sweet.x}, y:${sweet.y}`);
             
             // Set eating state and clear any existing timeout

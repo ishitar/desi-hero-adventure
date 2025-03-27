@@ -4,7 +4,7 @@ import { useGame } from '@/context/GameContext';
 import { Gift } from 'lucide-react';
 
 const SweetsStatus: React.FC = () => {
-  const { sweetCounts } = useGame();
+  const { sweetCounts, lastCollectedSweet } = useGame();
   
   const getSweetIcon = (type: string) => {
     switch(type) {
@@ -58,7 +58,8 @@ const SweetsStatus: React.FC = () => {
           key={type}
           className={`flex items-center gap-2 bg-white/20 backdrop-blur-md py-1 px-3 rounded-full 
                     border border-white/30 shadow-lg animate-fade-in
-                    ${count.collected > 0 ? 'bg-gradient-to-r from-white/30 to-yellow-300/30' : ''}`}
+                    ${count.collected > 0 ? 'bg-gradient-to-r from-white/30 to-yellow-300/30' : ''}
+                    ${lastCollectedSweet === type ? 'animate-pulse bg-yellow-400/30' : ''}`}
         >
           <div className="relative">
             {getSweetIcon(type)}

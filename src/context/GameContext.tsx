@@ -47,6 +47,7 @@ interface GameContextProps {
   decorations: GameObject[];
   sweets: GameObject[];
   sweetCounts: SweetCounts;
+  lastCollectedSweet: string | null;
   startGame: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
@@ -57,7 +58,7 @@ interface GameContextProps {
   moveRight: () => void;
   moveForward: () => void;
   stopMoving: () => void;
-  collectSweet: (id: string) => void;
+  collectSweet: (id: string, sweetType: string) => void;
   targetLocation?: {x: number, y: number};
   worldPosition: React.MutableRefObject<number>;
   showTreasureModal: boolean;
@@ -94,6 +95,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [decorations, setDecorations] = useState<GameObject[]>([]);
   const [sweets, setSweets] = useState<GameObject[]>([]);
   const [sweetCounts, setSweetCounts] = useState<SweetCounts>({});
+  const [lastCollectedSweet, setLastCollectedSweet] = useState<string | null>(null);
   const [gameLoopId, setGameLoopId] = useState<number | null>(null);
   const worldPosition = useRef(0);
   const worldSpeed = useRef(3);
@@ -252,7 +254,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [gameState]);
 
-  const collectSweet = useCallback((id: string) => {
+  const collectSweet = useCallback((id: string, sweetType: string) => {
     setSweets(prev => prev.map(sweet => {
       if (sweet.id === id && !sweet.collected) {
         return { ...sweet, collected: true };
@@ -263,15 +265,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSweetCounts(prev => {
       const updatedCounts = { ...prev };
       
-      const collectedSweet = sweets.find(s => s.id === id);
-      if (collectedSweet && collectedSweet.collected === false && updatedCounts[collectedSweet.type]) {
-        const currentCount = updatedCounts[collectedSweet.type].collected;
-        const maxCount = updatedCounts[collectedSweet.type].total;
-        updatedCounts[collectedSweet.type].collected = Math.min(currentCount + 1, maxCount);
+      if (updatedCounts[sweetType]) {
+        const currentCount = updatedCounts[sweetType].collected;
+        const maxCount = updatedCounts[sweetType].total;
+        updatedCounts[sweetType].collected = Math.min(currentCount + 1, maxCount);
       }
       
       return updatedCounts;
     });
+    
+    setLastCollectedSweet(sweetType);
+    setTimeout(() => {
+      setLastCollectedSweet(null);
+    }, 2000);
     
     setScore(prev => prev + 25);
     
@@ -285,7 +291,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTimeout(() => {
       setCharacter(prev => ({ ...prev, glowing: false }));
     }, 1000);
-  }, [sweets]);
+  }, []);
 
   const initializeGameObjects = useCallback(() => {
     const newObstacles: GameObject[] = Array(5).fill(null).map((_, i) => ({
@@ -856,6 +862,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         decorations,
         sweets,
         sweetCounts,
+        lastCollectedSweet,
         startGame,
         pauseGame,
         resumeGame,
