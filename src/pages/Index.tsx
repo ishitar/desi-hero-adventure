@@ -1,7 +1,6 @@
 
 import { GameProvider } from '@/context/GameContext';
 import GameCanvas from '@/components/Game/GameCanvas';
-import Background from '@/components/Game/Background';
 import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
