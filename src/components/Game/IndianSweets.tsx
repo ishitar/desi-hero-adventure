@@ -37,21 +37,28 @@ const IndianSweets: React.FC = () => {
       sweets.forEach(sweet => {
         if (sweet.collected || collectedSweets[sweet.id] || recentlyCollectedRef.current.has(sweet.id)) return;
         
+        // Increase hitbox during jump for all sweet types
         const baseBuffer = 30; 
-        const characterBuffer = character.jumping ? baseBuffer * 2 : baseBuffer;
+        // Significantly larger buffer when jumping to make it easier to collect sweets
+        const characterBuffer = character.jumping ? baseBuffer * 3 : baseBuffer;
         
+        // Calculate character hitbox (enlarged when jumping)
         const characterHitbox = {
           left: Math.min(lastCharacterPos.current.x, character.x) - characterBuffer,
           right: Math.max(lastCharacterPos.current.x, character.x) + character.width + characterBuffer,
-          top: Math.min(lastCharacterPos.current.y, character.y) - characterBuffer,
+          top: Math.min(lastCharacterPos.current.y, character.y) - characterBuffer * 2, // Extra vertical buffer
           bottom: Math.max(lastCharacterPos.current.y, character.y) + character.height + characterBuffer
         };
         
+        // Adjust sweet buffer based on type
         let sweetBuffer = baseBuffer * 1.5;
         if (['ladoo', 'jalebi'].includes(sweet.type)) {
           sweetBuffer *= 2.5;
         } else if (sweet.type === 'vadapav') {
           sweetBuffer *= 2;
+        } else if (sweet.type === 'dhokla') {
+          // Increase the hitbox specifically for dhokla
+          sweetBuffer *= 3.5;
         }
         
         const sweetHitbox = {
@@ -69,17 +76,23 @@ const IndianSweets: React.FC = () => {
           characterHitbox.bottom >= sweetHitbox.top && 
           characterHitbox.top <= sweetHitbox.bottom;
         
+        // Handle jumping collision with improved detection
         const isJumpingUp = character.jumping && lastCharacterPos.current.y > character.y;
         const extraVerticalCheck = isJumpingUp && 
-          Math.abs(characterHitbox.top - sweetHitbox.bottom) < baseBuffer * 4;
+          Math.abs(characterHitbox.top - sweetHitbox.bottom) < baseBuffer * 5;
         
         const isJumpingDown = character.jumping && lastCharacterPos.current.y < character.y;
         const downwardCheck = isJumpingDown && 
-          Math.abs(characterHitbox.bottom - sweetHitbox.top) < baseBuffer * 3;
+          Math.abs(characterHitbox.bottom - sweetHitbox.top) < baseBuffer * 4;
+        
+        // Special check for dhokla during jumps since it's harder to collect
+        const isDhoklaJumpCheck = sweet.type === 'dhokla' && character.jumping && 
+          Math.abs(characterHitbox.top - sweetHitbox.bottom) < baseBuffer * 6;
         
         if ((horizontalOverlap && verticalOverlap) || 
             (horizontalOverlap && extraVerticalCheck) || 
-            (horizontalOverlap && downwardCheck)) {
+            (horizontalOverlap && downwardCheck) ||
+            (horizontalOverlap && isDhoklaJumpCheck)) {
           if (!sweet.collected) {
             // Mark the sweet as collected locally
             setCollectedSweets(prev => ({...prev, [sweet.id]: true}));
@@ -172,6 +185,8 @@ const IndianSweets: React.FC = () => {
             sweetBuffer *= 2.5;
           } else if (sweet.type === 'vadapav') {
             sweetBuffer *= 2;
+          } else if (sweet.type === 'dhokla') {
+            sweetBuffer *= 3.5;
           }
           
           hitboxStyles = {
