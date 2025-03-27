@@ -1,4 +1,6 @@
+
 import React, { useRef, useEffect, useState } from 'react';
+import { Apple } from 'lucide-react';
 
 const Background: React.FC = () => {
   const [gameState, setGameState] = useState('playing');
@@ -16,15 +18,15 @@ const Background: React.FC = () => {
   
   useEffect(() => {
     const scrollSpeed = {
-      mountains: 0.5,
-      trees: 1.2,
-      clouds: 0.6,
-      buildings: 0.8,
-      people: 1.0,
-      temples: 0.9,
-      cows: 1.1,
-      fruitSellers: 1.0,
-      religiousStructures: 0.85
+      mountains: 0.2,     // Reduced from 0.5
+      trees: 0.5,         // Reduced from 1.2
+      clouds: 0.25,       // Reduced from 0.6
+      buildings: 0.3,     // Reduced from 0.8
+      people: 0.4,        // Reduced from 1.0
+      temples: 0.35,      // Reduced from 0.9
+      cows: 0.45,         // Reduced from 1.1
+      fruitSellers: 0.4,  // Reduced from 1.0
+      religiousStructures: 0.3  // Reduced from 0.85
     };
     
     let animationFrameId: number;
@@ -36,7 +38,7 @@ const Background: React.FC = () => {
         return;
       }
       
-      scrollPos += 3;
+      scrollPos += 1;  // Reduced from 3 to slow down overall movement
       
       if (mountainsRef.current) {
         const translateX = scrollPos * scrollSpeed.mountains;
@@ -126,6 +128,11 @@ const Background: React.FC = () => {
       
       <div ref={religiousStructuresRef} className="absolute bottom-[20%] w-[300%] h-[18%]">
         {renderReligiousBuildings()}
+        
+        {/* Apple Logo */}
+        <div className="absolute bottom-[45%] left-[42%] w-8 h-8 z-10 animate-float">
+          <Apple size={24} color="#000000e6" strokeWidth={1} />
+        </div>
         
         <div className="absolute bottom-0 left-[10%] w-24 h-36">
           <div className="absolute bottom-0 w-full h-2/3 bg-amber-200"></div>
